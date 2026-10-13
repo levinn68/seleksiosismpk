@@ -3,4 +3,4 @@
 const SUPABASE_URL = "https://wpkbiayebsnxhhskjtcu.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indwa2JpYXllYnNueGhoc2tqdGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTMxNTksImV4cCI6MjEwNzM4OTE1OX0.wO55nCIifOKkYB7_jIdjDOLU7SbDjCcbrcjEpOoin6I";
 // GANTI dengan password preset pilihanmu sebelum website dipakai.
-const PRESET_PASSWORD = "GANTI_PASSWORD_PRESET";
+const PRESET_PASSWORD = "MPK26#1";
