@@ -49,3 +49,15 @@ body.room-app{background:#f3f4f7;color:#171d2e}.room-topbar{background:#10172b;b
   .workspace{padding:19px 12px 13px}
   .action-card{padding:18px 15px}
 }
+
+/* V4.3: horizontal score controls and clear autosave state */
+.score-criteria{gap:15px}
+.score-criterion-horizontal{display:block;padding:12px 13px;border:1px solid #e9ecf3;border-radius:13px;background:linear-gradient(135deg,#fff,#fafbff)}
+.score-criterion-horizontal .criterion-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.score-criterion-horizontal label{font-size:12px;line-height:1.35}
+.score-criterion-horizontal label small{font-size:10px}
+.score-criterion-horizontal output{display:grid;place-items:center;min-width:42px;height:36px;padding:0 8px;border-radius:10px;background:#17223c;color:#fff;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.score-slider{display:block!important;width:100%!important;height:24px!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;accent-color:#5368ce;cursor:pointer;touch-action:pan-y}
+.score-save-state{margin-top:14px;color:#6f7890;font-size:11px;font-weight:700;min-height:17px}
+.score-save-state:contains('Tersimpan'){color:#168264}
+@media(max-width:560px){.score-criterion-horizontal{padding:11px 12px}.score-criterion-horizontal .criterion-head{margin-bottom:8px}.score-slider{min-height:28px!important}.score-criterion-horizontal output{min-width:40px;height:34px}}

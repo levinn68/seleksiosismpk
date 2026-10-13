@@ -133,7 +133,7 @@ $("pdfBtn").addEventListener("click",async()=>{
     });
     $("goPenilaian").addEventListener("click",()=>MC.setStage(stage));
     render();
-    setInterval(()=>{if(document.visibilityState==="visible"&&!busy.size&&!document.querySelector("dialog[open]"))reload();},30000);
+    setInterval(()=>{if(document.visibilityState==="visible"&&!busy.size&&!document.querySelector("dialog[open]"))reload();},5000);
     document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")reload();});
   }catch(e){showError(e);}
 })();
