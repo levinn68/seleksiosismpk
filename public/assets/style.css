@@ -320,3 +320,11 @@ dialog.mc.sheetmode{margin:auto}
 .imp-foot{padding:12px 20px 18px;border-top:1px solid var(--line-2)}
 .empty .btn{margin-top:14px}
 @media(max-width:560px){.imp-two{grid-template-columns:1fr 1.1fr}.chk{min-height:44px}.imp-body,.imp-foot{padding-left:16px;padding-right:16px}}
+
+/* Score management actions */
+.row-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.del-score-btn{border:1px solid #efc3cb;background:#fff7f8;color:#b4233c;border-radius:9px;padding:5px 9px;font-size:11.5px;font-weight:750;transition:background .15s,transform .15s}
+.del-score-btn:hover{background:#ffe8ec}
+.del-score-btn:active{transform:scale(.97)}
+.del-score-btn:disabled{opacity:.6;pointer-events:none}
+@media(max-width:640px){.row-actions{justify-content:flex-start;width:100%}.del-score-btn,.stbtn{min-height:30px}}

@@ -2,7 +2,7 @@
 "use strict";
 const {$,esc,fmt,icons}=MC;
 let data=null,stage=1,q="",unlocked=sessionStorage.getItem("mc_unlock")==="1",includeGugur=true,podiumKey="";
-const busy=new Set();
+const busy=new Set(),scoreBusy=new Set();
 const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 document.querySelector(".search").innerHTML=icons.search+'<input id="q" type="search" placeholder="Cari nama atau kelas" aria-label="Cari peserta" autocomplete="off">';
@@ -12,7 +12,7 @@ function paintButtons(){
   $("manageBtn").innerHTML=unlocked?icons.lock+"<span>Selesai mengatur</span>":icons.edit+"<span>Atur status</span>";
   $("pdfBtn").innerHTML=icons.pdf+"<span>Unduh PDF</span>";
   const b=$("manageBanner");b.hidden=!unlocked;
-  b.innerHTML=unlocked?icons.edit+"<span>Mode atur status aktif. Perubahan langsung tersimpan ke database.</span>":"";
+  b.innerHTML=unlocked?icons.edit+"<span>Mode pengelolaan aktif: status peserta bisa diubah dan nilai tahap terpilih bisa dihapus.</span>":"";
 }
 
 function countUp(el){
@@ -46,8 +46,9 @@ function rowHtml(r){
   const rank=r.gugur?"×":(r.rank??"–");
   const meta=multi?`<div class="lmeta">${r.j1?`${esc(r.j1)}: ${r.a==null?"belum menilai":fmt(r.a)} · ${esc(r.j2)}: ${r.b==null?"belum menilai":fmt(r.b)}`:"Preset penguji belum dibuat"}</div>`:"";
   const lab=r.complete?(multi?"rata-rata":"tes tulis"):"menunggu";
-  const isBusy=busy.has(String(r.id));
-  const act=unlocked?`<button type="button" class="stbtn ${r.gugur?"undo":""}" data-id="${esc(r.id)}" ${isBusy?"disabled":""}>${isBusy?"Menyimpan…":(r.gugur?"Batalkan gugur":"Gugurkan")}</button>`:"";
+  const isBusy=busy.has(String(r.id)),isScoreBusy=scoreBusy.has(String(r.id));
+  const hasScore=Number(stage)===1?(r.complete):(data.scores||[]).some(s=>String(s.participant_id)===String(r.id)&&Number(s.stage||1)===Number(stage));
+  const act=unlocked?`<div class="row-actions"><button type="button" class="stbtn ${r.gugur?"undo":""}" data-id="${esc(r.id)}" ${isBusy||isScoreBusy?"disabled":""}>${isBusy?"Menyimpan…":(r.gugur?"Batalkan gugur":"Gugurkan")}</button>${hasScore?`<button type="button" class="del-score-btn" data-score-id="${esc(r.id)}" ${isBusy||isScoreBusy?"disabled":""}>${isScoreBusy?"Menghapus…":"Hapus nilai"}</button>`:""}</div>`:"";
   return `<div class="${cls}"><div class="rank ${rank==="–"||rank==="×"?"none":""} num">${rank}</div><div class="who"><div class="lname">${esc(r.name)}</div><div class="lmeta">Kelas ${esc(r.kelas)}</div>${meta}</div><div class="lside"><span class="pill ${r.gugur?"no":"ok"}">${r.gugur?"Gugur":"Lolos"}</span>${act}</div><div class="lscore"><b class="num">${r.complete?fmt(r.avg):"–"}</b><small>${lab}</small></div></div>`;
 }
 
@@ -95,7 +96,32 @@ async function toggleStatus(id){
   if(ok)render();else renderList();
   reload(); // sinkronkan ulang dengan database
 }
-$("rows").addEventListener("click",e=>{const b=e.target.closest(".stbtn");if(b)toggleStatus(b.dataset.id);});
+async function deleteScore(id){
+  const row=data.participants.find(p=>String(p.id)===String(id));if(!row||scoreBusy.has(String(id)))return;
+  const stageName=MC.stageName(data.stages,stage);
+  const ok=await MC.dialog({title:"Hapus nilai peserta?",message:`Nilai <b>${esc(row.name)}</b> pada <b>${esc(stageName)}</b> akan dihapus dari database. ${Number(stage)===1?"Nilai Tes Tulis akan dikosongkan.":"Nilai dari kedua juri pada tahap ini akan dihapus."}<br><br><b>Tindakan ini tidak bisa dibatalkan.</b>`,confirm:"Hapus nilai",cancel:"Batal",danger:true});
+  if(!ok)return;
+  scoreBusy.add(String(id));renderList();
+  try{
+    if(Number(stage)===1){
+      const {data:res,error}=await MC.sb.from("participants").update({test_score:null}).eq("id",row.id).select("id,test_score");
+      if(error)throw error;
+      if(!res||!res.length||res[0].test_score!==null){const e=new Error("Database tidak mengizinkan perubahan nilai Tes Tulis (UPDATE/RLS).");e.blocked=true;throw e;}
+      row.test_score=null;
+    }else{
+      const {data:res,error}=await MC.sb.from("scores").delete().eq("participant_id",row.id).eq("stage",stage).select("participant_id,judge_id");
+      if(error)throw error;
+      const hadScore=(data.scores||[]).some(s=>String(s.participant_id)===String(row.id)&&Number(s.stage||1)===Number(stage));
+      if(hadScore&&(!res||!res.length)){const e=new Error("Tidak ada nilai yang terhapus. Periksa izin DELETE/RLS dan jalankan supabase_fix_delete.sql.");e.blocked=true;throw e;}
+      data.scores=(data.scores||[]).filter(s=>!(String(s.participant_id)===String(row.id)&&Number(s.stage||1)===Number(stage)));
+    }
+    MC.toast(`Nilai ${row.name} pada ${stageName} berhasil dihapus.`);
+    podiumKey="";await reload();
+  }catch(e){
+    MC.dialog({title:"Nilai belum terhapus",message:esc(e.message||e)+`<br><br>${Number(stage)===1?"Pastikan izin UPDATE pada tabel participants tersedia dan kolom test_score bisa dikosongkan.":"Jalankan supabase_fix_delete.sql di Supabase SQL Editor, lalu coba lagi."}`,confirm:"Mengerti",hideCancel:true});
+  }finally{scoreBusy.delete(String(id));renderList();}
+}
+$("rows").addEventListener("click",e=>{const del=e.target.closest(".del-score-btn");if(del){deleteScore(del.dataset.scoreId);return;}const b=e.target.closest(".stbtn");if(b)toggleStatus(b.dataset.id);});
 
 $("manageBtn").addEventListener("click",async()=>{
   if(unlocked){unlocked=false;sessionStorage.removeItem("mc_unlock");}
