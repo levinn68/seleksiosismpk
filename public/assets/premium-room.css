@@ -327,3 +327,91 @@ body.room-app .room-footer a{color:#5368a4;text-decoration:none}
  body.room-app .premium-input{font-size:13px}
  body.room-app .workspace-bottom{display:grid;gap:8px}
 }
+
+
+/* Final polish pass — spacing, form rhythm, navigation and touch targets */
+body.room-app .room-shell{width:100%;max-width:1240px;margin-inline:auto}
+body.room-app .room-topbar .topbar-in{min-height:70px;gap:14px}
+body.room-app .room-topbar .brand{gap:10px}
+body.room-app .room-topbar .brand b{font-size:14px}
+body.room-app .room-topbar .brand small{margin-top:3px;font-size:10px}
+body.room-app .room-topbar .btn{min-height:40px;padding:9px 14px}
+body.room-app .room-hero{position:relative;isolation:isolate}
+body.room-app .room-hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(110deg,transparent 35%,#ffffff05)}
+body.room-app .workspace{padding:clamp(20px,3vw,34px);overflow:hidden}
+body.room-app .workspace-head{margin-bottom:25px}
+body.room-app .workspace-head h2{font-size:clamp(23px,2.4vw,28px)}
+body.room-app .secure-pill{flex:none;max-width:100%}
+body.room-app .action-card{padding:clamp(20px,2.6vw,28px);gap:0}
+body.room-app .action-icon{width:44px;height:44px;margin-bottom:19px;border:1px solid #e6eaf3;background:linear-gradient(145deg,#f7f8fc,#edf1f8);box-shadow:inset 0 1px #fff}
+body.room-app .action-card h3{font-size:clamp(20px,2vw,23px)}
+body.room-app .action-card>p{min-height:62px;margin-bottom:23px}
+body.room-app .form-row{gap:8px;margin-bottom:17px}
+body.room-app .form-row label{font-size:12px;font-weight:700;color:#39445b}
+body.room-app .premium-input{height:48px;min-height:48px;padding:0 13px;border:1px solid #dce2ec;border-radius:11px;background-color:#fff;box-shadow:0 1px 2px #111a3006;transition:border-color .18s,box-shadow .18s}
+body.room-app select.premium-input{padding-right:34px;text-overflow:ellipsis}
+body.room-app .premium-input:hover{border-color:#c8d0e0}
+body.room-app .premium-input:focus{outline:none;border-color:#8494d4;box-shadow:0 0 0 4px #5368c916}
+body.room-app .premium-button{min-height:49px;border-radius:12px;padding:0 16px;box-shadow:0 8px 18px -13px #10172b99}
+body.room-app .premium-button span{font-size:17px;transition:transform .18s}
+body.room-app .premium-button:hover span{transform:translate(2px,-1px)}
+body.room-app .card-footnote{padding-top:2px;font-size:10.5px}
+body.room-app .plain-button{gap:10px;min-height:46px;border-color:#dfe5ef;background:#f9faff;transition:background .18s,border-color .18s,transform .18s}
+body.room-app .plain-button:active{transform:scale(.99)}
+body.room-app .scan-room-button{display:flex!important;justify-content:flex-start!important;text-align:left!important;padding:10px 13px!important;border-radius:12px!important}
+body.room-app .scan-button-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#eef1ff;color:#5266c5;font-size:19px;flex:none}
+body.room-app .scan-room-button>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:2px;min-width:0}
+body.room-app .scan-room-button b{font-size:12px;color:#27344f}
+body.room-app .scan-room-button small{font-size:10px;font-weight:500;color:#7c879b}
+body.room-app .scan-button-arrow{color:#7a86a0;font-size:17px}
+body.room-app .scan-room-button.is-scanning{background:#f0f3ff;border-color:#aeb9eb}
+body.room-app .notice{padding:12px 14px;line-height:1.6}
+body.room-app .workspace-bottom{font-size:10.5px}
+body.room-app .workspace-bottom span{display:inline-flex;align-items:center;gap:7px}
+body.room-app .room-footer{line-height:1.6;text-align:center}
+body.room-app .room-toast{max-width:calc(100vw - 28px);border-radius:13px;line-height:1.5}
+@media(max-width:700px){
+ body.room-app .room-topbar .topbar-in{min-height:62px;padding:9px 12px;gap:8px}
+ body.room-app .room-topbar .brand{gap:8px}
+ body.room-app .room-topbar .brand img{width:34px;height:34px}
+ body.room-app .room-topbar .brand b{font-size:12px}
+ body.room-app .room-topbar .brand small{display:none}
+ body.room-app .room-topbar .btn{min-height:36px;padding:8px 10px;font-size:11px}
+ body.room-app .live-tag{font-size:8px;letter-spacing:.08em;white-space:nowrap}
+ body.room-app .room-shell{padding:0 12px 22px}
+ body.room-app .room-hero{padding:25px 19px 23px;margin-top:13px}
+ body.room-app .hero-copy .eyebrow{font-size:8px;letter-spacing:.12em}
+ body.room-app .hero-copy h1{margin:15px 0 12px;font-size:clamp(31px,8vw,39px);line-height:1.08}
+ body.room-app .hero-copy>p{font-size:12px;line-height:1.75}
+ body.room-app .hero-stats{margin-top:20px;padding-top:15px;gap:8px}
+ body.room-app .hero-stats b{font-size:19px}
+ body.room-app .hero-stats span{font-size:9px}
+ body.room-app .workspace{padding:19px 13px 15px;margin-top:13px}
+ body.room-app .workspace-head{margin-bottom:19px}
+ body.room-app .workspace-head h2{font-size:22px}
+ body.room-app .workspace-head p{font-size:12px}
+ body.room-app .secure-pill{font-size:10px;padding:7px 9px}
+ body.room-app .action-card{padding:19px 15px}
+ body.room-app .action-icon{width:39px;height:39px;margin-bottom:15px}
+ body.room-app .action-label{font-size:8px}
+ body.room-app .action-card h3{font-size:20px;margin-bottom:8px}
+ body.room-app .action-card>p{font-size:12px;min-height:0;margin-bottom:19px}
+ body.room-app .form-row{gap:7px;margin-bottom:14px}
+ body.room-app .premium-input{height:47px;min-height:47px;font-size:13px}
+ body.room-app .premium-button{min-height:48px}
+ body.room-app .card-footnote{font-size:10px}
+ body.room-app .workspace-bottom{margin-top:16px;padding-top:13px;font-size:9.5px}
+ body.room-app .room-footer{gap:8px;font-size:8px}
+}
+@media(max-width:390px){
+ body.room-app .room-topbar .topbar-in{padding-inline:9px}
+ body.room-app .room-topbar .brand b{font-size:11px}
+ body.room-app .room-topbar .brand img{width:31px;height:31px}
+ body.room-app .live-tag{display:none}
+ body.room-app .room-hero{padding-inline:16px}
+ body.room-app .hero-copy h1{font-size:31px}
+ body.room-app .hero-stats{gap:5px}
+ body.room-app .hero-stats span{font-size:8px}
+ body.room-app .workspace{padding-inline:11px}
+ body.room-app .action-card{padding-inline:13px}
+}
