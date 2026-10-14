@@ -21,18 +21,17 @@ function scoreFor(pid,jid){return scoresFor(pid).find(s=>String(s.judge_id)===St
 async function enterRoom(reconnect){$('lobby').hidden=true;$('roomPanel').hidden=false;const {data,error}=await sb.from('scores').select('participant_id,judge_id,stage,total,articulation,intonation,fluency,expression,confidence,body_language,updated_at');if(!error)scores=data||[];const stage=Number(room.stage);participants=allParticipants.filter(p=>Number(p.stage||1)===stage);if(!participants.length){const {data:p,error:pe}=await sb.from('participants').select('id,name,kelas,stage,status').eq('stage',stage).order('id');if(!pe)participants=p||[]}
  renderRoom();await syncRoomPresets();if(channel)sb.removeChannel(channel);channel=sb.channel('judging-room-'+room.code).on('postgres_changes',{event:'*',schema:'public',table:'scores'},payload=>{const r=payload.new||payload.old;if(r&&Number(r.stage)===Number(room.stage)){if(payload.eventType==='DELETE')scores=scores.filter(x=>!(String(x.participant_id)===String(r.participant_id)&&String(x.judge_id)===String(r.judge_id)&&Number(x.stage)===Number(r.stage)));else{const i=scores.findIndex(x=>String(x.participant_id)===String(r.participant_id)&&String(x.judge_id)===String(r.judge_id)&&Number(x.stage)===Number(r.stage));if(i>=0)scores[i]=r;else scores.push(r)}renderParticipants()}}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'judging_rooms',filter:'code=eq.'+room.code},async payload=>{room=payload.new;await syncRoomPresets();renderRoom(false)}).subscribe();if(reconnect)toast('Room dipulihkan dari sesi sebelumnya.')}
 async function syncRoomPresets(){
- // Jangan menimpa preset yang sudah ada: preset dapat berisi pasangan penguji
- // yang ditetapkan khusus untuk peserta. Room hanya mengisi preset yang belum ada.
  if(!sb||!room||!room.judge1_id||!room.judge2_id)return;
  const ps=allParticipants.filter(p=>Number(p.stage||1)===Number(room.stage));
  if(!ps.length)return;
+ // A room is only one judge pair. Never overwrite participant-specific presets with this room's pair.
  const {data:existing,error:readError}=await sb.from('presets').select('participant_id').in('participant_id',ps.map(p=>p.id));
- if(readError){console.warn('Preset peserta gagal diperiksa:',readError.message);return;}
- const known=new Set((existing||[]).map(p=>String(p.participant_id)));
- const rows=ps.filter(p=>!known.has(String(p.id))).map(p=>({participant_id:p.id,judge1_id:room.judge1_id,judge2_id:room.judge2_id,password_verified:true}));
+ if(readError){console.warn('Room presets tidak bisa diperiksa:',readError.message);return;}
+ const have=new Set((existing||[]).map(x=>String(x.participant_id)));
+ const rows=ps.filter(p=>!have.has(String(p.id))).map(p=>({participant_id:p.id,judge1_id:room.judge1_id,judge2_id:room.judge2_id,password_verified:true}));
  if(!rows.length)return;
  const {error}=await sb.from('presets').insert(rows);
- if(error)console.warn('Preset peserta baru belum tersinkron ke leaderboard:',error.message);
+ if(error)console.warn('Preset baru dari room belum tersimpan:',error.message);
 }
 function renderRoom(loadForm=true){const second=room.judge2_id!=null;const myName=judgeName(judgeId);const scored=participants.filter(p=>scoreFor(p.id,judgeId)).length;const completed=participants.filter(p=>{const s=scoresFor(p.id);return s.some(x=>String(x.judge_id)===String(room.judge1_id))&&s.some(x=>String(x.judge_id)===String(room.judge2_id))}).length;
  $('roomPanel').innerHTML=`<div class="room-panel-head"><div><div class="section-kicker">ROOM AKTIF · TAHAP ${room.stage}</div><h2 style="margin:5px 0;font-size:23px;letter-spacing:-.04em">Sesi penilaian MC</h2><p style="margin:0;color:#81899a;font-size:12px">Anda masuk sebagai <b>${esc(myName)}</b> · Penguji ${role==='judge1'?'1':'2'}</p></div><div><div class="room-status">● ROOM ACTIVE</div><div class="room-code" id="roomCodeText">${esc(room.code)}</div><button class="plain-button" style="margin-top:7px;width:100%" id="copyRoom">Salin kode</button></div></div>
@@ -52,7 +51,7 @@ async function saveRoomScore(quiet=false){
   CR.forEach(([k,,max])=>{const v=Number($('sc_'+k).value||0);if(!Number.isInteger(v)||v<0||v>max)throw Error('Nilai '+k+' harus 0 sampai '+max+'.');row[k]=v});
   row.total=CR.reduce((sum,[k])=>sum+row[k],0);row.updated_at=new Date().toISOString();
   const {data,error}=await sb.from('scores').upsert(row,{onConflict:'participant_id,judge_id,stage'}).select().single();if(error)throw error;
-  const i=scores.findIndex(x=>String(x.participant_id)===String(row.participant_id)&&String(x.judge_id)===String(row.judge_id)&&Number(x.stage)===Number(row.stage));if(i>=0)scores[i]=data;else scores.push(data);
+  const i=scores.findIndex(x=>String(x.participant_id)===String(row.participant_id)&&String(x.judge_id)===String(row.judge_id));if(i>=0)scores[i]=data;else scores.push(data);
   if(state)state.textContent='✓ Tersimpan otomatis · '+row.total+'/100';
   renderParticipants();
   if(!quiet)toast('Nilai tersimpan · '+row.total+'/100');

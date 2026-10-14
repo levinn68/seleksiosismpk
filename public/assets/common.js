@@ -80,22 +80,23 @@ MC.computeRows=function(data,stage){
     const sc=data.scores.filter(s=>String(s.participant_id)===String(p.id)&&Number(s.stage||1)===Number(stage));
     let a=pr?sc.find(s=>String(s.judge_id)===String(pr.judge1_id)):null;
     let b=pr?sc.find(s=>String(s.judge_id)===String(pr.judge2_id)):null;
-    let jn1=pr?(judge.get(String(pr.judge1_id))||{}).name||"Penguji 1":null;
-    let jn2=pr?(judge.get(String(pr.judge2_id))||{}).name||"Penguji 2":null;
-    // Fallback: preset tidak cocok dengan juri yang benar-benar menilai -> pakai 2 nilai tersimpan di tahap ini.
-    if(!(a&&b)&&sc.length>=2){
-      const t=x=>String(x.updated_at||"");
-      const two=sc.slice().sort((x,y)=>t(x).localeCompare(t(y))).slice(0,2);
-      a=two[0];b=two[1];
-      jn1=(judge.get(String(a.judge_id))||{}).name||"Penguji 1";
-      jn2=(judge.get(String(b.judge_id))||{}).name||"Penguji 2";
+    // Older room sessions could overwrite a participant's preset after scores were saved.
+    // If the saved preset no longer matches both scores, show the two most recently updated
+    // distinct judge scores instead of hiding an otherwise saved evaluation from the leaderboard.
+    let judge1Id=pr?.judge1_id, judge2Id=pr?.judge2_id;
+    if(Number(stage)!==1&&!(a&&b)){
+      const recent=[...sc].sort((x,y)=>String(y.updated_at||'').localeCompare(String(x.updated_at||'')));
+      const distinct=[];
+      for(const score of recent){if(!distinct.some(x=>String(x.judge_id)===String(score.judge_id)))distinct.push(score);if(distinct.length===2)break;}
+      if(distinct.length===2){a=distinct[0];b=distinct[1];judge1Id=a.judge_id;judge2Id=b.judge_id;}
     }
     const written=Number(stage)===1&&p.test_score!==null&&p.test_score!==undefined;
     const complete=Number(stage)===1?written:!!(a&&b);
     const avg=Number(stage)===1?(written?Number(p.test_score):null):(complete?(Number(a.total)+Number(b.total))/2:null);
     return {id:p.id,name:p.name,kelas:p.kelas||"—",gugur:p.status==="gugur",complete,avg,
       a:a?Number(a.total):null,b:b?Number(b.total):null,
-      j1:jn1,j2:jn2,rank:null};
+      j1:judge1Id!=null?(judge.get(String(judge1Id))||{}).name||"Penguji 1":null,
+      j2:judge2Id!=null?(judge.get(String(judge2Id))||{}).name||"Penguji 2":null,rank:null};
   });
   rows.sort((x,y)=>{
     if(x.complete!==y.complete)return x.complete?-1:1;
