@@ -3,6 +3,8 @@
 alter table public.judging_rooms
   add column if not exists active_participant_id text;
 
+alter table public.judging_rooms add column if not exists password_hash text;
+
 -- Realtime untuk UPDATE judging_rooms harus aktif agar perangkat kedua menerima perubahan.
 do $$
 begin
