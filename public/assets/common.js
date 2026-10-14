@@ -78,15 +78,24 @@ MC.computeRows=function(data,stage){
   const rows=data.participants.filter(p=>Number(p.stage||1)===Number(stage)).map(p=>{
     const pr=preset.get(String(p.id));
     const sc=data.scores.filter(s=>String(s.participant_id)===String(p.id)&&Number(s.stage||1)===Number(stage));
-    const a=pr?sc.find(s=>String(s.judge_id)===String(pr.judge1_id)):null;
-    const b=pr?sc.find(s=>String(s.judge_id)===String(pr.judge2_id)):null;
+    let a=pr?sc.find(s=>String(s.judge_id)===String(pr.judge1_id)):null;
+    let b=pr?sc.find(s=>String(s.judge_id)===String(pr.judge2_id)):null;
+    let jn1=pr?(judge.get(String(pr.judge1_id))||{}).name||"Penguji 1":null;
+    let jn2=pr?(judge.get(String(pr.judge2_id))||{}).name||"Penguji 2":null;
+    // Fallback: preset tidak cocok dengan juri yang benar-benar menilai -> pakai 2 nilai tersimpan di tahap ini.
+    if(!(a&&b)&&sc.length>=2){
+      const t=x=>String(x.updated_at||"");
+      const two=sc.slice().sort((x,y)=>t(x).localeCompare(t(y))).slice(0,2);
+      a=two[0];b=two[1];
+      jn1=(judge.get(String(a.judge_id))||{}).name||"Penguji 1";
+      jn2=(judge.get(String(b.judge_id))||{}).name||"Penguji 2";
+    }
     const written=Number(stage)===1&&p.test_score!==null&&p.test_score!==undefined;
     const complete=Number(stage)===1?written:!!(a&&b);
     const avg=Number(stage)===1?(written?Number(p.test_score):null):(complete?(Number(a.total)+Number(b.total))/2:null);
     return {id:p.id,name:p.name,kelas:p.kelas||"—",gugur:p.status==="gugur",complete,avg,
       a:a?Number(a.total):null,b:b?Number(b.total):null,
-      j1:pr?(judge.get(String(pr.judge1_id))||{}).name||"Penguji 1":null,
-      j2:pr?(judge.get(String(pr.judge2_id))||{}).name||"Penguji 2":null,rank:null};
+      j1:jn1,j2:jn2,rank:null};
   });
   rows.sort((x,y)=>{
     if(x.complete!==y.complete)return x.complete?-1:1;
