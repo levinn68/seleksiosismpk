@@ -61,3 +61,46 @@ body.room-app{background:#f3f4f7;color:#171d2e}.room-topbar{background:#10172b;b
 .score-save-state{margin-top:14px;color:#6f7890;font-size:11px;font-weight:700;min-height:17px}
 .score-save-state:contains('Tersimpan'){color:#168264}
 @media(max-width:560px){.score-criterion-horizontal{padding:11px 12px}.score-criterion-horizontal .criterion-head{margin-bottom:8px}.score-slider{min-height:28px!important}.score-criterion-horizontal output{min-width:40px;height:34px}}
+
+
+/* V4.4 — polished participant picker, QR panel, and motion */
+.room-qr-box{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:22px;
+  margin:14px 0 18px;padding:22px;border:1px solid #e4e8f1;border-radius:22px;
+  background:radial-gradient(circle at 10% 0%,#eef2ff 0,transparent 48%),linear-gradient(145deg,#fff,#f7f8fc);
+  box-shadow:0 10px 32px #17213b0a;animation:roomRise .55s cubic-bezier(.2,.8,.2,1) both
+}
+.room-qr-copy h3{font-size:20px;margin:7px 0 8px;letter-spacing:-.035em;color:#17213b}
+.room-qr-copy p{font-size:12px;line-height:1.7;color:#778096;margin:0 0 16px;max-width:370px}
+.room-qr-eyebrow{font-size:9px;letter-spacing:.18em;font-weight:900;color:#6574c7}
+.room-qr-code-label{display:inline-flex;gap:9px;align-items:center;padding:9px 12px;border-radius:10px;background:#edf0fb;color:#727c99;font-size:9px;font-weight:800;letter-spacing:.08em}
+.room-qr-code-label b{font-size:13px;color:#1a2542;letter-spacing:.14em}
+.room-qr-image-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;border:1px solid #e6eaf3;border-radius:17px;background:#fff;box-shadow:0 8px 22px #17213b10}
+.room-qr-image{display:block;width:170px;height:170px;object-fit:contain;border-radius:9px;background:white}
+.room-qr-image-caption{font-size:9px;color:#8790a4;font-weight:700}
+#participantPicker{opacity:0;transform:translateY(16px) scale(.975);transition:opacity .22s ease,transform .22s cubic-bezier(.2,.8,.2,1);color:var(--text,#182239);background:#fff}
+#participantPicker[open]{opacity:1;transform:translateY(0) scale(1)}
+#participantPicker::backdrop{background:rgba(11,18,37,.55);backdrop-filter:blur(5px);animation:pickerFade .22s ease both}
+#participantPicker .participant-option{animation:pickerItemIn .28s both;transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}
+#participantPicker .participant-option:active{transform:scale(.985)}
+#participantPicker .participant-option:hover{transform:translateY(-1px);box-shadow:0 7px 18px #17213b0d}
+.picker-close-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid #e2e7f0;background:#f7f8fc;color:#606b83;border-radius:999px;padding:8px 13px;font:700 11px 'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:background .18s,border-color .18s,transform .18s,color .18s}
+.picker-close-btn span{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#e9edf7;color:#354467;font-size:18px;line-height:1}
+.picker-close-btn:hover{background:#eef1ff;border-color:#cdd5fb;color:#3f55ad;transform:translateY(-1px)}
+.picker-close-btn:active{transform:scale(.97)}
+#participantPicker h3{letter-spacing:-.03em}
+#participantPicker .premium-input{border-radius:13px}
+#participantPicker .room-empty{padding:24px 12px;text-align:center;color:#8b93a5;background:#f8f9fc;border-radius:14px;font-size:12px}
+@keyframes roomRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pickerFade{from{opacity:0}to{opacity:1}}
+@keyframes pickerItemIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:560px){
+ .room-qr-box{grid-template-columns:1fr;gap:15px;padding:17px;border-radius:18px}
+ .room-qr-copy h3{font-size:18px}
+ .room-qr-image-wrap{width:max-content;max-width:100%;justify-self:center}
+ .room-qr-image{width:190px;height:190px}
+ #participantPicker{padding:16px!important;border-radius:22px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #participantPicker,#participantPicker::backdrop,.room-qr-box,#participantPicker .participant-option{animation:none!important;transition:none!important}
+}
