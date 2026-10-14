@@ -487,3 +487,28 @@ body.room-app .room-qr-copy p{font-size:12px!important;line-height:1.65}
  body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr) 124px!important;gap:9px;padding:12px!important}
  body.room-app .room-qr-image{max-width:108px!important}
 }
+
+
+/* Center and enlarge the room QR code on all phone widths */
+body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr)!important;justify-items:center;text-align:center;gap:14px!important;padding:18px!important}
+body.room-app .room-qr-copy{width:100%;text-align:center}
+body.room-app .room-qr-copy .room-qr-eyebrow{text-align:center}
+body.room-app .room-qr-copy h3{margin:6px 0 8px!important}
+body.room-app .room-qr-copy p{margin:0 auto 10px!important;max-width:460px}
+body.room-app .room-qr-code-label{display:block;text-align:center}
+body.room-app .room-qr-image-wrap{grid-row:1;width:min(100%,260px)!important;max-width:260px;margin:0 auto;padding:12px!important;border-radius:18px!important}
+body.room-app .room-qr-image{width:100%!important;max-width:232px!important;height:auto!important;margin:0 auto;image-rendering:pixelated}
+body.room-app .room-qr-image-caption{font-size:11px!important;line-height:1.5;margin-top:8px!important}
+@media(max-width:700px){
+ body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr)!important;padding:16px!important;gap:13px!important}
+ body.room-app .room-qr-image-wrap{grid-row:1;width:min(100%,290px)!important;max-width:290px;padding:12px!important}
+ body.room-app .room-qr-image{max-width:264px!important}
+ body.room-app .room-qr-copy{grid-row:2}
+ body.room-app .room-qr-copy h3{font-size:18px!important}
+ body.room-app .room-qr-copy p{font-size:12px!important}
+ body.room-app .room-qr-code-label{font-size:10px!important}
+}
+@media(max-width:390px){
+ body.room-app .room-qr-image-wrap{width:min(100%,270px)!important;max-width:270px;padding:10px!important}
+ body.room-app .room-qr-image{max-width:246px!important}
+}
