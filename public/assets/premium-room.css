@@ -221,3 +221,37 @@ body.room-app{background:radial-gradient(ellipse at 0 0,#e9edf6 0,transparent 35
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media print{.room-topbar,.room-hero,.workspace-head,.lobby-grid,.workspace-bottom,.room-footer{display:none!important}.room-shell,.workspace{padding:0;margin:0;border:0;box-shadow:none}}
+
+
+/* Hotfix: keep the actual judging workspace controls from inheriting legacy input sizing */
+body.room-app .score-criteria{display:flex;flex-direction:column;gap:10px;min-width:0}
+body.room-app .score-criterion.score-criterion-horizontal{display:block;min-width:0;width:100%;box-sizing:border-box}
+body.room-app .score-criterion-horizontal .criterion-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+body.room-app .score-criterion-horizontal .criterion-head label{display:block;min-width:0;line-height:1.4}
+body.room-app .score-criterion-horizontal .criterion-head output{flex:0 0 auto}
+body.room-app input.score-slider[type="range"]{display:block!important;width:100%!important;max-width:100%;height:28px!important;min-height:28px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;accent-color:var(--ui-blue);cursor:pointer;touch-action:pan-y}
+body.room-app .score-total{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+body.room-app .score-total>div{min-width:0}
+body.room-app .score-save-state{display:block;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
+body.room-app .room-actions{display:flex;align-items:stretch;gap:9px;flex-wrap:wrap}
+body.room-app .room-actions .premium-button{width:100%;min-width:0;flex:1 1 100%;margin:0}
+body.room-app .room-box{min-width:0;overflow-wrap:anywhere}
+body.room-app .room-columns>*{min-width:0}
+body.room-app .room-qr-box{min-width:0}
+body.room-app .room-qr-image{max-width:100%;height:auto;aspect-ratio:1}
+body.room-app #participantPicker{box-sizing:border-box;max-width:calc(100vw - 24px);overflow:hidden}
+body.room-app #participantList{min-width:0}
+body.room-app .participant-option{width:100%;min-width:0}
+body.room-app .qr-scanner-shell{width:100%;min-width:0}
+body.room-app #qrCameraMount,body.room-app #qrCameraMount video{max-width:100%!important}
+@media(max-width:700px){
+ body.room-app .room-panel{min-width:0;padding:10px}
+ body.room-app .room-panel .room-panel-head{grid-template-columns:minmax(0,1fr);align-items:start}
+ body.room-app .room-panel .room-panel-head>div:last-child{width:100%;max-width:220px}
+ body.room-app .room-columns{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+ body.room-app .score-criterion-horizontal{padding:11px}
+ body.room-app .score-criterion-horizontal .criterion-head{margin-bottom:6px}
+ body.room-app .score-total strong{font-size:25px}
+ body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr) 88px;gap:10px}
+ body.room-app .room-qr-image{width:78px;height:78px}
+}
