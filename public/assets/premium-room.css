@@ -415,3 +415,53 @@ body.room-app .room-toast{max-width:calc(100vw - 28px);border-radius:13px;line-h
  body.room-app .workspace{padding-inline:11px}
  body.room-app .action-card{padding-inline:13px}
 }
+
+
+/* Screenshot-driven repair: compact mobile hero and rebuild QR scanner layout */
+body.room-app .qr-scanner-shell{display:block!important;position:relative;width:100%;min-width:0;overflow:hidden;border:1px solid #dfe5ef;border-radius:18px;background:#fff;box-shadow:0 12px 30px -24px #10172b99}
+body.room-app .qr-scanner-top{display:flex!important;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;background:#fff;border-bottom:1px solid #edf0f5}
+body.room-app .qr-scanner-heading{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+body.room-app .qr-scanner-heading>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+body.room-app .qr-scanner-heading b{display:block;font-size:14px;line-height:1.35;font-weight:800;color:#1b2640}
+body.room-app .qr-scanner-heading small{display:block;font-size:11px;line-height:1.45;color:#778197}
+body.room-app .qr-live-dot{width:8px;height:8px;flex:none;border-radius:50%;background:#1b9b70;box-shadow:0 0 0 4px #1b9b7018}
+body.room-app .qr-scanner-close{display:grid;place-items:center;flex:none;width:36px;height:36px;padding:0;border:1px solid #e0e5ee;border-radius:10px;background:#f7f8fb;color:#4b566d;font-size:23px;line-height:1}
+body.room-app .qr-camera-stage{position:relative;isolation:isolate;width:100%;min-width:0;overflow:hidden;background:#111827;aspect-ratio:4/5;max-height: min(68vh,520px)}
+body.room-app #qrCameraMount{position:absolute;inset:0;width:100%;height:100%;min-width:0;overflow:hidden}
+body.room-app #qrCameraMount>div{width:100%!important;max-width:100%!important;min-width:0!important;height:100%!important;border:0!important;padding:0!important}
+body.room-app #qrCameraMount video{position:absolute!important;inset:0;width:100%!important;height:100%!important;max-width:100%!important;object-fit:cover!important}
+body.room-app #qrCameraMount canvas{display:none!important}
+body.room-app #qrCameraMount img{display:none!important}
+body.room-app #qrCameraMount__dashboard_section_csr{display:none!important}
+body.room-app .qr-viewfinder{position:absolute;z-index:3;left:50%;top:50%;width:min(68%,260px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+body.room-app .qr-viewfinder .corner{position:absolute;width:23px;height:23px;border-color:#fff;border-style:solid;filter:drop-shadow(0 1px 3px #0008)}
+body.room-app .qr-viewfinder .corner.tl{top:0;left:0;border-width:4px 0 0 4px;border-radius:3px 0 0}
+body.room-app .qr-viewfinder .corner.tr{top:0;right:0;border-width:4px 4px 0 0;border-radius:0 3px 0 0}
+body.room-app .qr-viewfinder .corner.bl{bottom:0;left:0;border-width:0 0 4px 4px;border-radius:0 0 0 3px}
+body.room-app .qr-viewfinder .corner.br{bottom:0;right:0;border-width:0 4px 4px 0;border-radius:0 0 3px}
+body.room-app .qr-scan-line{position:absolute;left:8%;right:8%;top:10%;height:2px;background:linear-gradient(90deg,transparent,#d9c17e,#fff,#d9c17e,transparent);box-shadow:0 0 12px #e5ca8b;animation:qrScanSweep 2.6s ease-in-out infinite alternate}
+@keyframes qrScanSweep{from{top:10%;opacity:.6}to{top:90%;opacity:1}}
+body.room-app .qr-camera-hint{position:absolute;z-index:4;left:50%;bottom:12px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);padding:8px 12px;border:1px solid #ffffff30;border-radius:999px;background:#10172bc9;color:#fff;font-size:10px;line-height:1.4;text-align:center;backdrop-filter:blur(8px)}
+body.room-app .qr-camera-hint span{margin-right:5px}
+body.room-app .qr-scanner-footer{display:flex;align-items:center;gap:9px;padding:12px 14px;color:#6c778d;font-size:10.5px;line-height:1.5;background:#fff}
+body.room-app .qr-camera-icon{display:grid;place-items:center;flex:none;width:27px;height:27px;border-radius:8px;background:#f0f3fa;color:#5869bd;font-size:14px}
+@media(max-width:700px){
+ body.room-app .hero-art{display:none!important}
+ body.room-app .room-hero{min-height:0!important;padding:24px 18px 21px!important}
+ body.room-app .hero-copy h1{margin:14px 0 11px!important;font-size:clamp(30px,8vw,38px)!important;line-height:1.08!important}
+ body.room-app .hero-copy>p{font-size:11.5px!important;line-height:1.65!important}
+ body.room-app .hero-stats{margin-top:17px!important;padding-top:13px!important}
+ body.room-app .hero-stats b{font-size:18px!important}
+ body.room-app .hero-stats span{font-size:8.5px!important}
+ body.room-app .qr-scanner-top{padding:12px}
+ body.room-app .qr-scanner-heading b{font-size:13px}
+ body.room-app .qr-scanner-heading small{font-size:10px}
+ body.room-app .qr-camera-stage{aspect-ratio:4/5;max-height:58vh}
+ body.room-app .qr-viewfinder{width:min(70%,240px)}
+ body.room-app .qr-viewfinder .corner{width:20px;height:20px}
+ body.room-app .qr-scanner-footer{font-size:10px;padding:10px 12px}
+}
+@media(max-width:390px){
+ body.room-app .qr-camera-stage{aspect-ratio:3/4;max-height:54vh}
+ body.room-app .qr-camera-hint{font-size:9px;padding:7px 9px}
+}
