@@ -465,3 +465,25 @@ body.room-app .qr-camera-icon{display:grid;place-items:center;flex:none;width:27
  body.room-app .qr-camera-stage{aspect-ratio:3/4;max-height:54vh}
  body.room-app .qr-camera-hint{font-size:9px;padding:7px 9px}
 }
+
+
+/* QR room share card: prioritize scanability on narrow phones */
+body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr) 164px!important;align-items:center;gap:18px;padding:18px!important}
+body.room-app .room-qr-image-wrap{width:100%;padding:10px!important;border-radius:15px!important}
+body.room-app .room-qr-image{display:block;width:100%!important;height:auto!important;max-width:144px!important;aspect-ratio:1;object-fit:contain;margin:0 auto}
+body.room-app .room-qr-image-caption{font-size:10px!important;line-height:1.45}
+body.room-app .room-qr-copy{min-width:0}
+body.room-app .room-qr-copy h3{font-size:18px!important;line-height:1.3}
+body.room-app .room-qr-copy p{font-size:12px!important;line-height:1.65}
+@media(max-width:700px){
+ body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr) 142px!important;gap:12px;padding:14px!important}
+ body.room-app .room-qr-image-wrap{padding:8px!important}
+ body.room-app .room-qr-image{width:100%!important;max-width:124px!important}
+ body.room-app .room-qr-image-caption{font-size:9px!important}
+ body.room-app .room-qr-copy h3{font-size:16px!important}
+ body.room-app .room-qr-copy p{font-size:11px!important}
+}
+@media(max-width:390px){
+ body.room-app .room-qr-box{grid-template-columns:minmax(0,1fr) 124px!important;gap:9px;padding:12px!important}
+ body.room-app .room-qr-image{max-width:108px!important}
+}
