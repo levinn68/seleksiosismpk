@@ -15,6 +15,20 @@ function paintButtons(){
   b.innerHTML=unlocked?icons.edit+"<span>Mode pengelolaan aktif: status peserta bisa diubah dan nilai tahap terpilih bisa dihapus.</span>":"";
 }
 
+async function addParticipantFromLeaderboard(){
+  const vals=await MC.dialog({title:"Tambah peserta",message:"Peserta akan ditambahkan ke tahap yang sedang dipilih di leaderboard.",fields:[{name:"name",label:"Nama lengkap",placeholder:"Nama peserta"},{name:"kelas",label:"Kelas",placeholder:"Contoh: 8.1"}],confirm:"Simpan peserta",validate:v=>!v.name.trim()?"Nama peserta wajib diisi.":!v.kelas.trim()?"Kelas peserta wajib diisi.":""});
+  if(!vals)return;
+  const btn=$("addParticipantBtn");btn.disabled=true;
+  try{
+    const {data:created,error}=await MC.sb.from("participants").insert({name:vals.name.trim(),kelas:vals.kelas.trim(),stage:Number(stage)}).select("id,name,kelas,stage,status,test_score").single();
+    if(error)throw error;
+    MC.toast("Peserta "+created.name+" berhasil ditambahkan.");
+    await reload();
+  }catch(e){MC.dialog({title:"Gagal menambah peserta",message:esc(e.message||e),confirm:"Mengerti",hideCancel:true});}
+  finally{btn.disabled=false;}
+}
+$("addParticipantBtn").addEventListener("click",addParticipantFromLeaderboard);
+
 function countUp(el){
   const to=Number(el.dataset.v);if(reduce||isNaN(to)){el.textContent=fmt(to);return;}
   const t0=performance.now(),dur=900;
