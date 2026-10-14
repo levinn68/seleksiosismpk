@@ -104,3 +104,49 @@ body.room-app{background:#f3f4f7;color:#171d2e}.room-topbar{background:#10172b;b
 @media(prefers-reduced-motion:reduce){
  #participantPicker,#participantPicker::backdrop,.room-qr-box,#participantPicker .participant-option{animation:none!important;transition:none!important}
 }
+
+
+/* V4.5 — camera scanner redesign */
+.scan-room-button{display:flex!important;align-items:center!important;gap:12px!important;text-align:left!important;padding:13px 15px!important;border:1px solid #dfe5f1!important;border-radius:16px!important;background:linear-gradient(135deg,#fff,#f5f7ff)!important;color:#1b2744!important;box-shadow:0 5px 16px #17213b0a;transition:transform .2s,box-shadow .2s,border-color .2s!important}
+.scan-room-button:hover{transform:translateY(-1px);border-color:#bfcaf4!important;box-shadow:0 10px 24px #17213b12}
+.scan-button-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:13px;background:#e9edff;color:#4d60c4;font-size:22px}
+.scan-room-button>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:3px}
+.scan-room-button b{font-size:12px;font-weight:800;color:#1b2744}
+.scan-room-button small{font-size:10px;font-weight:500;color:#838ca1}
+.scan-button-arrow{font-size:19px;color:#8a95b0;transition:transform .2s}
+.scan-room-button.is-scanning{border-color:#aebcf6!important;background:#f0f3ff!important}
+.scan-room-button.is-scanning .scan-button-icon{background:#dce4ff;animation:scanPulse 1.5s ease-in-out infinite}
+.qr-scanner-shell{display:block!important;overflow:hidden;margin:12px 0 16px;border:1px solid #e0e6f2;border-radius:22px;background:#111a30;color:#fff;box-shadow:0 18px 45px #10172b22;animation:roomRise .28s ease both}
+.qr-scanner-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 17px 14px}
+.qr-scanner-heading{display:flex;align-items:center;gap:10px}
+.qr-scanner-heading>div{display:flex;flex-direction:column;gap:4px}
+.qr-scanner-heading b{font-size:13px;letter-spacing:-.02em}
+.qr-scanner-heading small{font-size:10px;color:#aeb8cf}
+.qr-live-dot{width:8px;height:8px;border-radius:50%;background:#55d6a5;box-shadow:0 0 0 5px #55d6a51a}
+.qr-scanner-close{width:34px;height:34px;flex:0 0 34px;border:1px solid #ffffff25;border-radius:50%;background:#ffffff10;color:#fff;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:background .18s,transform .18s}
+.qr-scanner-close:hover{background:#ffffff20;transform:rotate(90deg)}
+.qr-camera-stage{position:relative;margin:0 12px;overflow:hidden;border-radius:16px;background:#05080e;min-height:260px}
+#qrCameraMount{width:100%;min-height:260px}
+#qrCameraMount video{display:block;width:100%!important;height:auto!important;max-height:390px;object-fit:cover;border-radius:16px}
+#qrCameraMount img{display:none!important}
+#qrCameraMount>div:first-child{width:100%!important;border:0!important}
+#qrCameraMount__dashboard,#qrCameraMount__dashboard_section{display:none!important}
+#qrCameraMount__scan_region{border:0!important;width:100%!important;min-height:260px}
+#qrCameraMount__scan_region img{display:none!important}
+#qrCameraMount__scan_region video{object-fit:cover}
+.qr-viewfinder{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.qr-viewfinder:before{content:"";width:min(62vw,230px);height:min(62vw,230px);max-width:230px;max-height:230px;border:1px solid #ffffff55;border-radius:18px;box-shadow:0 0 0 999px #060b1780}
+.qr-viewfinder .corner{position:absolute;width:28px;height:28px;border-color:#91a5ff;border-style:solid}
+.qr-viewfinder .tl{left:calc(50% - min(31vw,115px));top:calc(50% - min(31vw,115px));border-width:3px 0 0 3px;border-radius:8px 0 0}
+.qr-viewfinder .tr{right:calc(50% - min(31vw,115px));top:calc(50% - min(31vw,115px));border-width:3px 3px 0 0;border-radius:0 8px 0 0}
+.qr-viewfinder .bl{left:calc(50% - min(31vw,115px));bottom:calc(50% - min(31vw,115px));border-width:0 0 3px 3px;border-radius:0 0 0 8px}
+.qr-viewfinder .br{right:calc(50% - min(31vw,115px));bottom:calc(50% - min(31vw,115px));border-width:0 3px 3px 0;border-radius:0 0 8px}
+.qr-scan-line{position:absolute;width:min(54vw,200px);height:2px;background:linear-gradient(90deg,transparent,#7fa0ff,#d9e2ff,#7fa0ff,transparent);top:calc(50% - min(31vw,115px) + 7px);filter:drop-shadow(0 0 5px #7290ff);animation:qrLineMove 2.3s ease-in-out infinite alternate}
+.qr-camera-hint{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;align-items:center;gap:7px;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 5px #000}
+.qr-camera-hint span{font-size:16px}
+.qr-scanner-footer{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px 15px;color:#aeb8cf;font-size:10px}
+.qr-camera-icon{display:grid;place-items:center;width:23px;height:23px;border-radius:8px;background:#ffffff12;color:#dbe2ff;font-size:13px}
+@keyframes qrLineMove{from{transform:translateY(0)}to{transform:translateY(195px)}}
+@keyframes scanPulse{0%,100%{box-shadow:0 0 0 0 #6c7ce844}50%{box-shadow:0 0 0 7px #6c7ce800}}
+@media(max-width:560px){.qr-scanner-shell{border-radius:19px}.qr-camera-stage{margin:0 9px;border-radius:14px}.qr-scanner-top{padding:14px 14px 12px}#qrCameraMount,#qrCameraMount__scan_region{min-height:245px}.qr-viewfinder:before{width:220px;height:220px}.qr-viewfinder .tl{left:calc(50% - 110px);top:calc(50% - 110px)}.qr-viewfinder .tr{right:calc(50% - 110px);top:calc(50% - 110px)}.qr-viewfinder .bl{left:calc(50% - 110px);bottom:calc(50% - 110px)}.qr-viewfinder .br{right:calc(50% - 110px);bottom:calc(50% - 110px)}.qr-scan-line{width:190px;top:calc(50% - 103px)}}
+@media(prefers-reduced-motion:reduce){.scan-room-button,.qr-scanner-shell,.qr-scan-line,.scan-room-button.is-scanning .scan-button-icon{animation:none!important;transition:none!important}}
