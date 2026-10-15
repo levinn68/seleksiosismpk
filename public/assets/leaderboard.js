@@ -62,7 +62,9 @@ function rowHtml(r){
   const lab=r.complete?(multi?"rata-rata":"tes tulis"):"menunggu";
   const isBusy=busy.has(String(r.id)),isScoreBusy=scoreBusy.has(String(r.id));
   const hasScore=Number(stage)===1?(r.complete):(data.scores||[]).some(s=>String(s.participant_id)===String(r.id)&&Number(s.stage||1)===Number(stage));
-  const act=unlocked?`<div class="row-actions"><button type="button" class="stbtn ${r.gugur?"undo":""}" data-id="${esc(r.id)}" ${isBusy||isScoreBusy?"disabled":""}>${isBusy?"Menyimpan…":(r.gugur?"Batalkan gugur":"Gugurkan")}</button>${hasScore?`<button type="button" class="del-score-btn" data-score-id="${esc(r.id)}" ${isBusy||isScoreBusy?"disabled":""}>${isScoreBusy?"Menghapus…":"Hapus nilai"}</button>`:""}</div>`:"";
+  const scoreRows=(data.scores||[]).filter(s=>String(s.participant_id)===String(r.id)&&Number(s.stage||1)===Number(stage));
+  const editButtons=Number(stage)===1&&r.complete?'<button type="button" class="edit-score-btn" data-id="'+esc(r.id)+'">Edit nilai</button>':Number(stage)!==1?scoreRows.map(s=>'<button type="button" class="edit-score-btn" data-id="'+esc(r.id)+'" data-judge="'+esc(s.judge_id)+'">Edit '+esc((data.judges||[]).find(j=>String(j.id)===String(s.judge_id))?.name||'nilai penguji')+'</button>').join(''):'';
+  const act=unlocked?'<div class="row-actions"><button type="button" class="stbtn '+(r.gugur?'undo':'')+'" data-id="'+esc(r.id)+'" '+(isBusy||isScoreBusy?'disabled':'')+'>'+(isBusy?'Menyimpan…':(r.gugur?'Batalkan gugur':'Gugurkan'))+'</button>'+editButtons+(hasScore?'<button type="button" class="del-score-btn" data-score-id="'+esc(r.id)+'" '+(isBusy||isScoreBusy?'disabled':'')+'>'+(isScoreBusy?'Menghapus…':'Hapus nilai')+'</button>':'')+'</div>':'';
   return `<div class="${cls}"><div class="rank ${rank==="–"||rank==="×"?"none":""} num">${rank}</div><div class="who"><div class="lname">${esc(r.name)}</div><div class="lmeta">Kelas ${esc(r.kelas)}</div>${meta}</div><div class="lside"><span class="pill ${r.gugur?"no":"ok"}">${r.gugur?"Gugur":"Lolos"}</span>${act}</div><div class="lscore"><b class="num">${r.complete?fmt(r.avg):"–"}</b><small>${lab}</small></div></div>`;
 }
 
@@ -110,6 +112,25 @@ async function toggleStatus(id){
   if(ok)render();else renderList();
   reload(); // sinkronkan ulang dengan database
 }
+async function editScore(id,judgeId){
+ const participant=data.participants.find(p=>String(p.id)===String(id));if(!participant)return;
+ if(Number(stage)===1){
+  const value=await MC.dialog({title:"Edit nilai Tes Tulis",message:"Ubah nilai untuk "+esc(participant.name)+".",fields:[{name:"score",label:"Nilai (0–100)",type:"number",placeholder:"0 sampai 100"}],confirm:"Simpan perubahan",validate:v=>v.score.trim()===""||!Number.isFinite(Number(v.score))||Number(v.score)<0||Number(v.score)>100?"Masukkan nilai 0 sampai 100.":""});
+  if(!value)return;
+  const {data:res,error}=await MC.sb.from("participants").update({test_score:Number(value.score)}).eq("id",participant.id).select("id,test_score");
+  if(error||!res?.length){MC.dialog({title:"Gagal mengubah nilai",message:esc(error?.message||"Database tidak mengizinkan perubahan nilai."),confirm:"Mengerti",hideCancel:true});return;}
+  await reload();MC.toast("Nilai Tes Tulis berhasil diperbarui.");return;
+ }
+ const {data:score,error:readError}=await MC.sb.from("scores").select("participant_id,judge_id,stage,total,articulation,intonation,fluency,expression,confidence,body_language").eq("participant_id",participant.id).eq("judge_id",Number(judgeId)).eq("stage",Number(stage)).maybeSingle();
+ if(readError||!score){MC.dialog({title:"Nilai tidak ditemukan",message:esc(readError?.message||"Nilai penguji tidak ditemukan."),confirm:"Mengerti",hideCancel:true});return;}
+ const fields=[["articulation","Artikulasi",20],["intonation","Intonasi dan volume",20],["fluency","Kelancaran",20],["expression","Ekspresi dan penghayatan",15],["confidence","Kepercayaan diri",15],["body_language","Sikap dan bahasa tubuh",10]];
+ const vals=await MC.dialog({title:"Edit nilai penguji",message:"Perbarui aspek nilai "+esc((data.judges||[]).find(j=>String(j.id)===String(judgeId))?.name||"penguji")+" untuk "+esc(participant.name)+".",fields:fields.map(([name,label,max])=>({name,label:label+" (0–"+max+")",type:"number",placeholder:String(score[name]??0)})),confirm:"Simpan perubahan",validate:v=>{for(const [name,label,max] of fields){if(v[name].trim()===""||!Number.isInteger(Number(v[name]))||Number(v[name])<0||Number(v[name])>max)return label+" harus diisi 0 sampai "+max+"."; }return "";}});
+ if(!vals)return;
+ const row={};fields.forEach(([name])=>row[name]=Number(vals[name]));row.total=fields.reduce((n,[name])=>n+row[name],0);row.updated_at=new Date().toISOString();
+ const {data:updated,error}=await MC.sb.from("scores").update(row).eq("participant_id",participant.id).eq("judge_id",Number(judgeId)).eq("stage",Number(stage)).select("participant_id");
+ if(error||!updated?.length){MC.dialog({title:"Gagal mengubah nilai",message:esc(error?.message||"Database tidak mengizinkan perubahan nilai."),confirm:"Mengerti",hideCancel:true});return;}
+ MC.toast("Nilai penguji berhasil diperbarui.");podiumKey="";await reload();
+}
 async function deleteScore(id){
   const row=data.participants.find(p=>String(p.id)===String(id));if(!row||scoreBusy.has(String(id)))return;
   const stageName=MC.stageName(data.stages,stage);
@@ -135,7 +156,7 @@ async function deleteScore(id){
     MC.dialog({title:"Nilai belum terhapus",message:esc(e.message||e)+`<br><br>${Number(stage)===1?"Pastikan izin UPDATE pada tabel participants tersedia dan kolom test_score bisa dikosongkan.":"Jalankan supabase_fix_delete.sql di Supabase SQL Editor, lalu coba lagi."}`,confirm:"Mengerti",hideCancel:true});
   }finally{scoreBusy.delete(String(id));renderList();}
 }
-$("rows").addEventListener("click",e=>{const del=e.target.closest(".del-score-btn");if(del){deleteScore(del.dataset.scoreId);return;}const b=e.target.closest(".stbtn");if(b)toggleStatus(b.dataset.id);});
+$("rows").addEventListener("click",e=>{const edit=e.target.closest(".edit-score-btn");if(edit){editScore(edit.dataset.id,edit.dataset.judge||null);return;}const del=e.target.closest(".del-score-btn");if(del){deleteScore(del.dataset.scoreId);return;}const b=e.target.closest(".stbtn");if(b)toggleStatus(b.dataset.id);});
 
 $("manageBtn").addEventListener("click",async()=>{
   if(unlocked){unlocked=false;sessionStorage.removeItem("mc_unlock");}
