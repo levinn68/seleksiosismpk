@@ -54,6 +54,7 @@ function renderScoreEditor(){const p=participants.find(x=>String(x.id)===String(
 function category(n){return n>=90?'Sangat baik':n>=80?'Baik':n>=70?'Cukup':'Perlu ditingkatkan'}
 async function saveRoomScore(quiet=false){
  const p=participants.find(x=>String(x.id)===String(selectedPid));if(!p||savingScore)return; if(!CR.every(([k])=>$('sc_'+k)))return;
+ const missing=CR.filter(([k])=>!touchedCriteria.has(k));if(missing.length){const state=$('scoreSaveState');if(state)state.textContent='Belum lengkap: '+missing.map(x=>x[1]).join(', ');if(!quiet)toast('Nilai belum bisa disimpan. Lengkapi semua 6 aspek terlebih dahulu.');return;}
  clearTimeout(autosaveTimer);savingScore=true;
  const b=$('saveRoomScore'),state=$('scoreSaveState');if(b){b.disabled=true;if(!quiet)b.textContent='Menyimpan…'}if(state)state.textContent='Menyimpan ke database…';
  try{
