@@ -171,7 +171,7 @@ $("pdfBtn").addEventListener("click",async()=>{
       stage=s;MC.setStage(s);podiumKey="";render();
       const r=$("rows");r.classList.remove("swap");void r.offsetWidth;r.classList.add("swap");
     });
-    $("goPenilaian").addEventListener("click",()=>MC.setStage(stage));
+    const goPenilaian=$("goPenilaian");if(goPenilaian)goPenilaian.addEventListener("click",()=>MC.setStage(stage));
     render();
     setInterval(()=>{if(document.visibilityState==="visible"&&!busy.size&&!document.querySelector("dialog[open]"))reload();},5000);
     document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")reload();});
