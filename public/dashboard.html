@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14243A">
+<title>Dashboard Seleksi OSIS/MPK · SMP Tunas Harapan</title>
+<meta name="description" content="Sistem seleksi OSIS/MPK SMP Tunas Harapan">
+<link rel="icon" href="assets/logo-mpk.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+:root{--dash-navy:#14243A;--dash-gold:#D6B56D;--dash-paper:#F5F6F8}
+body.dashboard{background:var(--dash-paper);color:var(--dash-navy)}
+.dash-main{width:min(1040px,100%);margin:0 auto;padding:28px 20px 56px}
+.dash-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:14px 0 24px}
+.dash-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;color:#8a6c2f;text-transform:uppercase}
+.dash-intro h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.04em;line-height:1.12;margin:7px 0 8px;color:var(--dash-navy)}
+.dash-intro p{margin:0;color:#697386;max-width:590px}
+.dash-actions{display:flex;gap:10px;flex-wrap:wrap}
+.dash-actions .btn,.dash-nav a{min-height:44px}
+.dash-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+.dash-nav a{display:inline-flex;align-items:center;justify-content:center;padding:10px 15px;border:1px solid #dce1e8;background:#fff;color:var(--dash-navy);text-decoration:none;font-weight:700;border-radius:8px}
+.dash-nav a.active,.dash-nav a:hover{background:var(--dash-navy);color:#fff;border-color:var(--dash-navy)}
+.dash-section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:24px 0 12px}
+.dash-section-head h2{margin:0;font-size:19px;letter-spacing:-.025em}
+.dash-section-head p{margin:3px 0 0;color:#707b8b;font-size:13px}
+.dash-stage{font-size:12px;color:#707b8b}
+.dash-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.dash-stat{background:#fff;border:1px solid #e1e5eb;border-radius:10px;padding:18px;min-width:0}
+.dash-stat .stat-label{display:block;font-size:12px;font-weight:650;color:#687386}
+.dash-stat strong{display:block;margin:8px 0 2px;font-size:clamp(27px,4vw,36px);line-height:1.1;letter-spacing:-.045em;font-weight:800;color:var(--dash-navy);font-variant-numeric:tabular-nums}
+.dash-stat small{color:#8992a0;font-size:12px}
+.dash-stat.accent{border-top:3px solid var(--dash-gold)}
+.dash-progress{background:#fff;border:1px solid #e1e5eb;border-radius:10px;padding:18px;margin-top:12px}
+.dash-progress-top{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:13px;font-weight:700}
+.dash-progress-top strong{font-size:18px;font-variant-numeric:tabular-nums}
+.dash-track{height:8px;background:#edf0f3;border-radius:20px;overflow:hidden;margin-top:12px}
+.dash-track span{display:block;height:100%;width:0;background:var(--dash-gold);transition:width .3s ease}
+.dash-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dash-stage-card{background:#fff;border:1px solid #e1e5eb;border-radius:10px;padding:18px}
+.dash-stage-card h3{font-size:15px;margin:0 0 5px}
+.dash-stage-card p{font-size:12px;color:#748092;margin:0 0 15px}
+.dash-stage-numbers{display:flex;gap:24px;flex-wrap:wrap}
+.dash-stage-numbers b{display:block;font-size:23px;letter-spacing:-.03em}
+.dash-stage-numbers span{display:block;font-size:11px;color:#778294}
+.dash-stage-card a{display:inline-flex;margin-top:16px;color:#14243A;font-size:13px;font-weight:750;text-decoration:none;border-bottom:1px solid var(--dash-gold);padding-bottom:3px}
+.dash-message{padding:13px 15px;border:1px solid #e1e5eb;background:#fff;border-radius:8px;color:#596579;font-size:13px}
+.dash-message.error{border-color:#f0c7c7;color:#9b2525;background:#fff8f8}
+.dash-footer{margin-top:28px;padding-top:16px;border-top:1px solid #e1e5eb;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#7a8492}
+@media(max-width:700px){.dash-main{padding:20px 14px 36px}.dash-intro{display:block}.dash-actions{margin-top:16px}.dash-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dash-stat{padding:14px}.dash-stage-grid{grid-template-columns:1fr}.dash-section-head{align-items:start;flex-direction:column}.topbar-in{padding-inline:14px}.brand b{font-size:13px}.brand small{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="dashboard">
+<header class="topbar">
+ <div class="topbar-in">
+  <a class="brand" href="dashboard.html"><img src="assets/logo-mpk.png" alt="Logo MPK SMP Tunas Harapan"><div><b>Seleksi OSIS / MPK</b><small>SMP Tunas Harapan · 2027/2028</small></div></a>
+  <span class="spacer"></span><a class="btn ghost-light sm" href="./">Lihat leaderboard</a>
+ </div>
+</header>
+<main class="dash-main">
+ <div class="dash-intro">
+  <div><div class="dash-kicker">Dashboard seleksi</div><h1>Ringkasan penilaian</h1><p>Pantau progres peserta seleksi OSIS/MPK SMP Tunas Harapan dari satu tempat.</p></div>
+  <div class="dash-actions"><a class="btn primary" href="penilaian.html">Buka ruang penilaian ↗</a></div>
+ </div>
+ <nav class="dash-nav" aria-label="Navigasi utama"><a class="active" href="dashboard.html" aria-current="page">Dashboard</a><a href="penilaian.html">Ruang Penilaian</a><a href="./">Leaderboard</a></nav>
+ <div id="dashState" class="dash-message" role="status" aria-live="polite">Memuat data peserta dari Supabase…</div>
+ <section aria-labelledby="overviewTitle">
+  <div class="dash-section-head"><div><h2 id="overviewTitle">Ringkasan peserta</h2><p>Rekap berdasarkan data yang tersimpan di database.</p></div><span class="dash-stage">Seluruh tahap</span></div>
+  <div class="dash-stats">
+   <article class="dash-stat"><span class="stat-label">Total peserta</span><strong id="totalCount">—</strong><small>Semua tahap seleksi</small></article>
+   <article class="dash-stat"><span class="stat-label">Sudah dinilai</span><strong id="doneCount">—</strong><small>Penilaian lengkap</small></article>
+   <article class="dash-stat"><span class="stat-label">Belum lengkap</span><strong id="pendingCount">—</strong><small>Menunggu penilaian</small></article>
+   <article class="dash-stat accent"><span class="stat-label">Progres penilaian</span><strong id="progressCount">—</strong><small>Persentase penilaian lengkap</small></article>
+  </div>
+  <div class="dash-progress"><div class="dash-progress-top"><span>Progres keseluruhan</span><strong id="progressLabel">—</strong></div><div class="dash-track" role="progressbar" aria-label="Progres penilaian" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar"><span id="progressFill"></span></div></div>
+ </section>
+ <section aria-labelledby="stageTitle">
+  <div class="dash-section-head"><div><h2 id="stageTitle">Progres per tahap</h2><p>Tahap 1 dan Tahap 2 dihitung secara terpisah.</p></div></div>
+  <div class="dash-stage-grid">
+   <article class="dash-stage-card"><h3>Tahap 1 · Tes Tulis</h3><p>Ringkasan peserta dan status nilai tes tulis.</p><div class="dash-stage-numbers"><div><b id="s1Total">—</b><span>Total peserta</span></div><div><b id="s1Done">—</b><span>Sudah dinilai</span></div><div><b id="s1Pct">—</b><span>Progres</span></div></div><a href="./?tahap=1">Buka leaderboard Tahap 1 ↗</a></article>
+   <article class="dash-stage-card"><h3>Tahap 2 · Tes MC</h3><p>Ringkasan peserta yang dinilai oleh dua penguji.</p><div class="dash-stage-numbers"><div><b id="s2Total">—</b><span>Total peserta</span></div><div><b id="s2Done">—</b><span>Sudah dinilai</span></div><div><b id="s2Pct">—</b><span>Progres</span></div></div><a href="./?tahap=2">Buka leaderboard Tahap 2 ↗</a></article>
+  </div>
+ </section>
+ <footer class="dash-footer"><span>Seleksi OSIS/MPK · SMP Tunas Harapan</span><span>Data diperbarui saat halaman dimuat.</span></footer>
+</main>
+<script src="config.js"></script><script src="assets/common.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const showState=(message,isError=false)=>{const el=$("dashState");el.textContent=message;el.classList.toggle("error",isError);};
+const percent=(done,total)=>total?Math.round(done/total*100):0;
+function setStage(prefix,total,done){$(prefix+"Total").textContent=total;$(prefix+"Done").textContent=done;$(prefix+"Pct").textContent=percent(done,total)+"%";}
+async function init(){
+ try{
+  MC.connect();
+  const data=await MC.loadAll();
+  const stages=[1,2].map(id=>({id,rows:MC.computeRows(data,id)}));
+  const total=stages.reduce((n,s)=>n+s.rows.length,0);
+  const done=stages.reduce((n,s)=>n+s.rows.filter(r=>r.complete).length,0);
+  $("totalCount").textContent=total;$("doneCount").textContent=done;$("pendingCount").textContent=total-done;
+  const pct=percent(done,total);$("progressCount").textContent=pct+"%";$("progressLabel").textContent=pct+"%";
+  $("progressFill").style.width=pct+"%";$("progressBar").setAttribute("aria-valuenow",String(pct));
+  stages.forEach(s=>setStage("s"+s.id,s.rows.length,s.rows.filter(r=>r.complete).length));
+  showState(total?"Data berhasil dimuat dari Supabase.":"Belum ada peserta. Tambahkan data peserta untuk mulai menggunakan dashboard.");
+ }catch(error){
+  showState("Data gagal dimuat: "+(error&&error.message?error.message:"Periksa koneksi dan konfigurasi Supabase."),true);
+  ["totalCount","doneCount","pendingCount","progressCount","progressLabel","s1Total","s1Done","s1Pct","s2Total","s2Done","s2Pct"].forEach(id=>$(id).textContent="—");
+ }
+}
+init();
+})();
+</script>
+</body>
+</html>
