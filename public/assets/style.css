@@ -328,3 +328,32 @@ dialog.mc.sheetmode{margin:auto}
 .del-score-btn:active{transform:scale(.97)}
 .del-score-btn:disabled{opacity:.6;pointer-events:none}
 @media(max-width:640px){.row-actions{justify-content:flex-start;width:100%}.del-score-btn,.stbtn{min-height:30px}}
+
+
+/* Premium score-management actions */
+.edit-score-btn{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:34px;
+  padding:7px 11px;
+  border:1px solid #dce3ee;
+  border-radius:9px;
+  background:#f4f7fb;
+  color:#24354d;
+  font:600 11.5px/1.25 'Plus Jakarta Sans',sans-serif;
+  box-shadow:0 1px 1px rgba(15,23,42,.03);
+  cursor:pointer;
+  transition:background .16s,border-color .16s,transform .16s;
+}
+.edit-score-btn:hover{background:#eaf0f8;border-color:#b8c7db}
+.edit-score-btn:active{transform:scale(.97)}
+.edit-score-btn:focus-visible,.stbtn:focus-visible,.del-score-btn:focus-visible{outline:3px solid rgba(214,181,109,.55);outline-offset:2px}
+.row-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-start;margin-top:8px}
+.row-actions .stbtn,.row-actions .edit-score-btn,.row-actions .del-score-btn{min-height:35px;white-space:nowrap}
+@media(max-width:640px){
+ .row-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;width:100%;margin-top:10px}
+ .row-actions .stbtn,.row-actions .edit-score-btn,.row-actions .del-score-btn{width:100%;min-width:0;min-height:38px;padding:8px 7px;font-size:11px}
+}
