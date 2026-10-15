@@ -9,7 +9,7 @@ const icons={
 const items=[['dashboard','dashboard.html','Dashboard'],['room','penilaian.html','Penilaian'],['leaderboard','./','Leaderboard']];
 const nav=document.createElement('nav');nav.className='float-bottom-nav';nav.setAttribute('aria-label','Navigasi utama');
 nav.innerHTML=items.map(([id,href,label])=>'<a href="'+href+'"'+(id===active?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true">'+icons[id]+'</svg><span>'+label+'</span></a>').join('');
-document.body.appendChild(nav);
+(document.body||document.documentElement).appendChild(nav);
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   document.addEventListener('click',function(event){
     const link=event.target.closest('.float-bottom-nav a');
