@@ -1,7 +1,8 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CR=[['articulation','Artikulasi',20],['intonation','Intonasi dan volume',20],['fluency','Kelancaran',20],['expression','Ekspresi dan penghayatan',15],['confidence','Kepercayaan diri',15],['body_language','Sikap dan bahasa tubuh',10]];
-let sb,judges=[],participants=[],allParticipants=[],room=null,role=null,judgeId=null,selectedPid=null,scores=[],channel=null,stageName='Tes MC',autosaveTimer=null,savingScore=false,changingActive=false;\nlet touchedCriteria=new Set();
+let sb,judges=[],participants=[],allParticipants=[],room=null,role=null,judgeId=null,selectedPid=null,scores=[],channel=null,stageName='Tes MC',autosaveTimer=null,savingScore=false,changingActive=false;
+let touchedCriteria=new Set();
 function toast(s){const el=$('roomToast');el.textContent=s;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),3000)}
 function notice(s){const el=$('connectionNotice');el.hidden=!s;el.textContent=s||'';const pill=document.querySelector('.secure-pill span');if(pill){pill.textContent=s?'Koneksi perlu diperiksa':'Supabase terhubung';pill.parentElement.classList.toggle('is-error',!!s);pill.parentElement.classList.toggle('is-ok',!s)}}
 function btnBusy(id,on,label){const b=$(id);b.disabled=on;if(on)b.dataset.old=b.textContent; b.textContent=on?label:(b.dataset.old||label)}
