@@ -568,3 +568,135 @@ body.room-app #scoreEditor .room-note{padding:0 2px}
  body.room-app #scoreEditor .criterion-head output{min-width:46px;height:38px;font-size:16px}
  body.room-app #scoreEditor .score-total{padding:14px}
 }
+
+
+/* ---------- Institutional premium refresh · October 2026 ---------- */
+/* Restrained palette, flatter surfaces, deliberate typography. Keep application logic untouched. */
+:root{
+ --ui-ink:#14243a;
+ --ui-navy:#14243a;
+ --ui-navy2:#203751;
+ --ui-gold:#d6b56d;
+ --ui-bg:#f5f6f8;
+ --ui-surface:#fff;
+ --ui-line:#e4e7ec;
+ --ui-muted:#667085;
+ --ui-radius:12px;
+ --ui-shadow:0 2px 10px rgba(20,36,58,.045);
+}
+html{scroll-behavior:smooth}
+body{background:#f5f6f8;color:#202b3c;font-size:14px}
+h1,h2,h3,h4{color:#14243a;letter-spacing:-.035em}
+a{transition:color .16s ease}
+.btn,.premium-button,.plain-button{box-shadow:none!important;border-radius:8px!important}
+.btn.primary,.premium-button.primary-button{background:#14243a!important;border-color:#14243a!important;color:#fff!important}
+.btn.gold{background:#d6b56d!important;border-color:#d6b56d!important;color:#14243a!important}
+.btn:hover,.premium-button:hover,.plain-button:hover{transform:translateY(-1px)}
+.topbar,.room-topbar{background:#14243a!important;backdrop-filter:none!important;box-shadow:none!important;border-bottom:1px solid #ffffff18}
+.topbar-in{min-height:62px}
+.brand img{border-radius:7px!important}
+.brand b{font-weight:700;letter-spacing:-.02em}
+.brand small{letter-spacing:.01em}
+body:not(.room-app) .hero{
+ background:#14243a!important;
+ padding:34px 0 112px!important;
+}
+body:not(.room-app) .hero::before{opacity:.035}
+body:not(.room-app) .hero h1{font-weight:750;letter-spacing:-.045em}
+body:not(.room-app) .hero p.sub{color:#cbd2dc!important;line-height:1.7}
+body:not(.room-app) .pod .pl,
+body:not(.room-app) .pod.r1 .pl{box-shadow:none;border-radius:8px 8px 2px 2px}
+body:not(.room-app) .pod.r1 .pl{background:#d6b56d!important;border-color:#d6b56d!important;color:#14243a}
+body:not(.room-app) .sheet{border:1px solid #e4e7ec!important;border-radius:12px!important;box-shadow:0 4px 18px rgba(20,36,58,.045)!important}
+body:not(.room-app) .sheet-head{padding:18px 20px}
+body:not(.room-app) .searchrow{background:#fff!important}
+body:not(.room-app) .search input{border-radius:8px!important;box-shadow:none}
+body:not(.room-app) .lrow{border-radius:7px!important}
+body:not(.room-app) .rank{border-radius:7px!important}
+body:not(.room-app) .lrow.top1 .rank{background:#f2e8d2!important;color:#705526!important}
+body:not(.room-app) .lscore b{color:#14243a!important}
+body:not(.room-app) .dlg{border-radius:12px!important;box-shadow:0 18px 60px #14243a2b!important}
+body.room-app{background:#f5f6f8!important}
+body.room-app .room-shell{max-width:1180px;padding-inline:24px}
+body.room-app .room-hero{
+ background:#14243a!important;
+ background-image:none!important;
+ border-radius:14px!important;
+ box-shadow:none!important;
+ min-height:0;
+ padding:clamp(26px,4vw,44px)!important;
+}
+body.room-app .room-hero:before{display:none!important}
+body.room-app .hero-copy h1{letter-spacing:-.05em}
+body.room-app .hero-copy h1 em{color:#d6b56d!important}
+body.room-app .hero-copy>p{color:#d2d8e1!important;max-width:560px}
+body.room-app .hero-stats{border-color:#ffffff24!important}
+body.room-app .hero-stats>div{border-color:#ffffff24!important}
+body.room-app .hero-art .orb{opacity:.12}
+body.room-app .art-card{border-radius:10px!important;box-shadow:none!important}
+body.room-app .float-chip{box-shadow:none!important;border-radius:7px!important}
+body.room-app .workspace{
+ background:#fff!important;border:1px solid #e4e7ec!important;border-radius:12px!important;
+ box-shadow:none!important;padding:clamp(18px,3vw,28px)!important;
+}
+body.room-app .workspace-head h2{letter-spacing:-.04em}
+body.room-app .secure-pill{border-radius:7px!important}
+body.room-app .action-card{
+ border:1px solid #e4e7ec!important;border-radius:10px!important;box-shadow:none!important;
+ background:#fff!important;padding:22px!important;
+}
+body.room-app .action-card:hover{border-color:#cbd2dc!important;box-shadow:none!important}
+body.room-app .action-icon{border-radius:8px!important}
+body.room-app .premium-input{border:1px solid #d7dce4!important;border-radius:7px!important;box-shadow:none!important;background:#fff!important}
+body.room-app .premium-input:focus{border-color:#8796a9!important;box-shadow:0 0 0 3px #14243a12!important}
+body.room-app .premium-button{border-radius:7px!important;box-shadow:none!important}
+body.room-app .primary-button{background:#14243a!important}
+body.room-app .secondary-button{background:#fff!important;color:#14243a!important;border:1px solid #cfd5de!important}
+body.room-app .room-panel{border-radius:10px!important;background:#f8f9fb!important;box-shadow:none!important}
+body.room-app .room-box{border-radius:9px!important;box-shadow:none!important;background:#fff!important}
+body.room-app .participant-option{border-radius:8px!important;box-shadow:none!important}
+body.room-app .participant-option.active{background:#f7f2e7!important;border-color:#d6b56d!important;box-shadow:inset 3px 0 #d6b56d!important}
+body.room-app #scoreEditor .score-criterion-horizontal{border-radius:8px!important;background:#fff!important;box-shadow:none!important}
+body.room-app #scoreEditor .criterion-head output{background:#14243a!important;border-radius:7px!important;box-shadow:none!important}
+body.room-app #scoreEditor input.score-slider[type=range]{accent-color:#14243a!important}
+body.room-app #scoreEditor .score-total{border-radius:8px!important;background:#f5f6f8!important;border-color:#e4e7ec!important}
+body.room-app #scoreEditor .room-actions .premium-button{min-height:46px}
+body.room-app .notice,body.room-app .room-toast{border-radius:8px!important}
+body.room-app .room-footer{color:#778191}
+body.dashboard{background:#f5f6f8!important}
+body.dashboard .dash-main{max-width:1180px}
+body.dashboard .dash-intro h1{font-weight:750;letter-spacing:-.045em}
+body.dashboard .dash-stat,body.dashboard .dash-stage-card{
+ border:1px solid #e4e7ec!important;border-radius:10px!important;box-shadow:none!important;background:#fff!important;
+}
+body.dashboard .dash-stat.accent{background:#f7f2e7!important;border-color:#e8d9b5!important}
+body.dashboard .dash-progress{border-radius:8px!important;background:#fff!important;border:1px solid #e4e7ec!important;box-shadow:none!important}
+body.dashboard .dash-track{border-radius:2px!important;background:#e9ecf1!important}
+body.dashboard .dash-track span{background:#d6b56d!important}
+body.dashboard .dash-stage-card a{color:#14243a!important;border-bottom-color:#d6b56d!important}
+body.dashboard .dash-message{border-radius:8px!important;box-shadow:none!important}
+.float-bottom-nav{background:#14243a!important;border:1px solid #ffffff20!important;border-radius:12px!important;box-shadow:0 8px 24px #14243a26!important;backdrop-filter:blur(12px)}
+.float-bottom-nav a{border-radius:7px!important}
+.float-bottom-nav a[aria-current=page]{background:#d6b56d!important;color:#14243a!important}
+@media(max-width:700px){
+ body.room-app .room-shell{padding-inline:14px}
+ body.room-app .room-hero{padding:24px 18px!important;border-radius:10px!important}
+ body.room-app .hero-art{display:none!important}
+ body.room-app .workspace{padding:17px 13px!important}
+ body.room-app .action-card{padding:17px 14px!important}
+ body:not(.room-app) .hero{padding:27px 0 104px!important}
+ body:not(.room-app) .hero-in,body:not(.room-app) .main{padding-inline:14px!important}
+ body:not(.room-app) .sheet-head{padding:15px 13px}
+ body:not(.room-app) .tools{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ body:not(.room-app) .tools .btn{min-width:0;white-space:normal}
+ body:not(.room-app) .lrow{grid-template-columns:38px minmax(0,1fr) auto;gap:7px 10px;padding:12px 8px}
+ body:not(.room-app) .rank{width:34px;height:34px}
+ body:not(.room-app) .lside{grid-column:2/-1;justify-content:flex-start}
+ body:not(.room-app) .lscore{grid-column:3;grid-row:1}
+ body:not(.room-app) .lscore b{font-size:20px}
+ body.dashboard .dash-main{padding-inline:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
