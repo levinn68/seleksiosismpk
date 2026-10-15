@@ -8,3 +8,13 @@ body{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 @media(max-width:520px){.float-bottom-nav{bottom:calc(12px + env(safe-area-inset-bottom,0px));width:max-content;padding:6px;border-radius:20px}.float-bottom-nav a{flex-direction:column;gap:4px;min-width:86px;padding:8px 10px;font-size:10px;min-height:51px}.float-bottom-nav a svg{width:20px;height:20px}}
 @media(prefers-reduced-motion:reduce){.float-bottom-nav a{transition:none}}
 @media print{.float-bottom-nav{display:none!important}body{padding-bottom:0!important}}
+
+/* Smooth, subtle page transitions */
+body{animation:page-enter .28s cubic-bezier(.2,.7,.2,1) both}
+body.page-leaving{animation:page-leave .16s ease-in both;pointer-events:none}
+@keyframes page-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes page-leave{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-4px)}}
+.float-bottom-nav{animation:nav-enter .38s cubic-bezier(.2,.8,.2,1) both}
+@keyframes nav-enter{from{opacity:0;transform:translate(-50%,12px) scale(.97)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+.float-bottom-nav a:active{transform:scale(.96)}
+@media(prefers-reduced-motion:reduce){body,.float-bottom-nav{animation:none!important}.float-bottom-nav a{transition:none!important}}
