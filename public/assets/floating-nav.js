@@ -10,4 +10,15 @@ const items=[['dashboard','dashboard.html','Dashboard'],['room','penilaian.html'
 const nav=document.createElement('nav');nav.className='float-bottom-nav';nav.setAttribute('aria-label','Navigasi utama');
 nav.innerHTML=items.map(([id,href,label])=>'<a href="'+href+'"'+(id===active?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true">'+icons[id]+'</svg><span>'+label+'</span></a>').join('');
 document.body.appendChild(nav);
+if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.addEventListener('click',function(event){
+    const link=event.target.closest('.float-bottom-nav a');
+    if(!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||link.target==='_blank')return;
+    const url=new URL(link.href,location.href);
+    if(url.origin!==location.origin||url.href===location.href)return;
+    event.preventDefault();
+    document.body.classList.add('page-leaving');
+    window.setTimeout(function(){location.href=url.href;},140);
+  });
+}
 })();
