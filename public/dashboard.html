@@ -54,6 +54,7 @@ body.dashboard{background:var(--dash-paper);color:var(--dash-navy)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="assets/floating-nav.css">
 </head>
 <body class="dashboard">
 <header class="topbar">
@@ -67,7 +68,6 @@ body.dashboard{background:var(--dash-paper);color:var(--dash-navy)}
   <div><div class="dash-kicker">Dashboard seleksi</div><h1>Ringkasan penilaian</h1><p>Pantau progres peserta seleksi OSIS/MPK SMP Tunas Harapan dari satu tempat.</p></div>
   <div class="dash-actions"><a class="btn primary" href="penilaian.html">Buka ruang penilaian ↗</a></div>
  </div>
- <nav class="dash-nav" aria-label="Navigasi utama"><a class="active" href="dashboard.html" aria-current="page">Dashboard</a><a href="penilaian.html">Ruang Penilaian</a><a href="./">Leaderboard</a></nav>
  <div id="dashState" class="dash-message" role="status" aria-live="polite">Memuat data peserta dari Supabase…</div>
  <section aria-labelledby="overviewTitle">
   <div class="dash-section-head"><div><h2 id="overviewTitle">Ringkasan peserta</h2><p>Rekap berdasarkan data yang tersimpan di database.</p></div><span class="dash-stage">Seluruh tahap</span></div>
@@ -116,5 +116,6 @@ async function init(){
 init();
 })();
 </script>
+<script src="assets/floating-nav.js"></script>
 </body>
 </html>
