@@ -200,6 +200,51 @@ function records(){
   const q=S.q;
   return out.filter(r=>!q||[r.pid,r.person&&r.person.name,r.person&&r.person.kelas,r.j1&&r.j1.name,r.j2&&r.j2.name].join(" ").toLowerCase().includes(q));
 }
+const BACKUP_SCORES=[
+ {participant:"Muhammad Nazril Ilham",j1:"febrian",j2:"geofani",a:72,b:75},
+ {participant:"Djazirah Fitriani",j1:"salsabila",j2:"dona",a:78,b:79},
+ {participant:"Deswita Putri Wulandari",j1:"salsabila",j2:"trania",a:89,b:90},
+ {participant:"Charisya Saskia Ananda",j1:"salsadira",j2:"trania",a:80,b:75},
+ {participant:"Aoura Esmeralda",j1:"alvino",j2:"dona",a:77,b:74},
+ {participant:"Wahyu Putri Anggraeni",j1:"geofani",j2:"trania",a:78,b:89},
+ {participant:"Sifania Monica Sesilia",j1:"dira",j2:"trania",a:80,b:82},
+ {participant:"Rara Dwi Novianti",j1:"dira",j2:"trania",a:83,b:87},
+ {participant:"Iloh Selviani",j1:"salsabil",j2:"trania",a:80,b:82},
+ {participant:"andika",j1:"febrian",j2:"geofani",a:75,b:75},
+ {participant:"sagita",j1:"trania",j2:"salsadira",a:79,b:82},
+ {participant:"Alfin Paskal Bussy",j1:"alvino",j2:"dona",a:87,b:81}
+];
+function backupCriteria(total){const max=CRITERIA.map(c=>c.max),sum=max.reduce((a,b)=>a+b,0);const vals=max.map(m=>Math.floor(total*m/sum));let rem=total-vals.reduce((a,b)=>a+b,0);for(let i=0;rem>0;i=(i+1)%vals.length){if(vals[i]<max[i]){vals[i]++;rem--;}}return Object.fromEntries(CRITERIA.map((c,i)=>[c.key,vals[i]]));}
+async function restoreBackupScores(){
+ if(S.stage!==2)return MC.toast("Pilih Tahap 2 · Tes MC untuk memulihkan backup.","err");
+ const ok=await MC.askPassword("Pulihkan backup nilai","Akan memulihkan 12 peserta dari catatan backup. Nilai yang sudah ada tidak ditimpa. Masukkan password preset untuk lanjut.");
+ if(!ok)return;
+ const btn=$("panel-daftar").querySelector("[data-restore-backup]");if(btn){btn.disabled=true;btn.textContent="Memulihkan…";}
+ try{
+  const normalize=s=>String(s||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").trim().toLocaleLowerCase("id").replace(/\\s+/g," ");
+  const findJudge=name=>S.data.judges.find(j=>normalize(j.name)===normalize(name)||normalize(j.name).includes(normalize(name)));
+  const findParticipant=name=>S.data.participants.find(p=>Number(p.stage||1)===2&&normalize(p.name)===normalize(name));
+  const report={inserted:0,skipped:0,missing:[],errors:[]};
+  for(const item of BACKUP_SCORES){
+   const p=findParticipant(item.participant),j1=findJudge(item.j1),j2=findJudge(item.j2);
+   if(!p){report.missing.push("Peserta: "+item.participant);continue;}
+   if(!j1||!j2){if(!j1)report.missing.push("Penguji: "+item.j1);if(!j2)report.missing.push("Penguji: "+item.j2);continue;}
+   for(const [judge,total] of [[j1,item.a],[j2,item.b]]){
+    const existing=S.data.scores.find(s=>String(s.participant_id)===String(p.id)&&String(s.judge_id)===String(judge.id)&&Number(s.stage||1)===2);
+    if(existing){report.skipped++;continue;}
+    const row={participant_id:p.id,judge_id:judge.id,stage:2,...backupCriteria(total),total,updated_at:new Date().toISOString()};
+    const {error}=await MC.sb.from("scores").insert(row);
+    if(error){report.errors.push(p.name+" / "+judge.name+": "+error.message);continue;}
+    report.inserted++;
+   }
+  }
+  await reload();
+  const lines=[report.inserted+" nilai berhasil dipulihkan.",report.skipped+" nilai yang sudah ada dilewati (tidak ditimpa).",report.missing.length?"Data belum cocok:\\n"+[...new Set(report.missing)].join("\\n"):"",report.errors.length?"Gagal menyimpan:\\n"+report.errors.join("\\n"):""].filter(Boolean);
+  await MC.dialog({title:report.errors.length||report.missing.length?"Pemulihan sebagian selesai":"Backup berhasil dipulihkan",message:lines.join("\\n\\n"),confirm:"Tutup"});
+ }catch(e){MC.toast("Pemulihan gagal: "+e.message,"err",7000);}
+ finally{if(btn){btn.disabled=false;btn.innerHTML="↻ Pulihkan backup nilai";}}
+}
+
 function renderList(){
   const el=$("panel-daftar");if(!S.data)return;
   const d=S.data,stagePresets=d.presets.filter(p=>{const x=d.participants.find(y=>String(y.id)===String(p.participant_id));return x&&Number(x.stage||1)===S.stage;}).length;
@@ -215,9 +260,10 @@ function renderList(){
     <div class="rec-act"><button type="button" class="btn sm" data-rename="${r.pid}" data-name="${esc(name)}">Ubah nama</button>${canStart?`<button type="button" class="btn primary sm" data-start="${r.pid}">Mulai menilai</button>`:""}<button type="button" class="btn danger sm" data-del="${r.kind}" data-id="${r.kind==="preset"?r.id:r.pid}" data-pid="${r.pid}">${r.kind==="preset"?"Hapus preset":"Hapus nilai tahap "+S.stage}</button></div></div>`;
   }).join(""):`<div class="empty"><b>${S.q?"Tidak ada hasil":S.listMode==="presets"?"Belum ada preset di tahap ini":"Belum ada nilai di tahap ini"}</b>${S.q?"Coba kata kunci lain.":S.listMode==="presets"?"Buat preset pertama di tab Preset.":"Nilai muncul setelah penguji menyimpan skor."}</div>`;
   const pc=d.participants.filter(p=>Number(p.stage||1)===S.stage).length;
-  el.innerHTML=`<div class="card"><div class="rec-top" style="align-items:center;margin-bottom:14px"><div><b>Peserta Tahap ${S.stage}</b><small style="display:block;color:var(--muted);font-size:12.5px">${pc} peserta terdaftar</small></div><button type="button" class="btn sm" data-imp>${icons.plus}<span>Impor peserta</span></button></div><div class="seg" role="tablist"><button type="button" role="tab" data-m="presets" aria-selected="${S.listMode==="presets"}">Preset <span class="num">${stagePresets}</span></button><button type="button" role="tab" data-m="scores" aria-selected="${S.listMode==="scores"}">Sudah dinilai <span class="num">${scored}</span></button></div>
+  el.innerHTML=`<div class="card"><div class="rec-top" style="align-items:center;margin-bottom:14px"><div><b>Peserta Tahap ${S.stage}</b><small style="display:block;color:var(--muted);font-size:12.5px">${pc} peserta terdaftar</small></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" data-restore-backup>↻ Pulihkan backup nilai</button><button type="button" class="btn sm" data-imp>${icons.plus}<span>Impor peserta</span></button></div></div><div class="seg" role="tablist"><button type="button" role="tab" data-m="presets" aria-selected="${S.listMode==="presets"}">Preset <span class="num">${stagePresets}</span></button><button type="button" role="tab" data-m="scores" aria-selected="${S.listMode==="scores"}">Sudah dinilai <span class="num">${scored}</span></button></div>
   <div class="search" style="margin-bottom:6px">${icons.search}<input id="rq" type="search" placeholder="Cari peserta, penguji, nomor, atau kelas" value="${esc(S.q)}" autocomplete="off"></div>${cards}</div>`;
   el.querySelector("[data-imp]").addEventListener("click",doImport);
+  const restoreBtn=el.querySelector("[data-restore-backup]");if(restoreBtn)restoreBtn.addEventListener("click",restoreBackupScores);
   el.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{S.listMode=b.dataset.m;renderList();}));
   const rq=$("rq");rq.addEventListener("input",e=>{S.q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;renderList();const n=$("rq");n.focus();n.setSelectionRange(pos,pos);});
   el.querySelectorAll("[data-start]").forEach(b=>b.addEventListener("click",()=>startScoring(Number(b.dataset.start))));
