@@ -221,7 +221,7 @@ async function restoreBackupScores(){
  if(!ok)return;
  const btn=$("panel-daftar").querySelector("[data-restore-backup]");if(btn){btn.disabled=true;btn.textContent="Memulihkan…";}
  try{
-  const normalize=s=>String(s||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").trim().toLocaleLowerCase("id").replace(/\\s+/g," ");
+  const normalize=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("id").replace(/\s+/g," ");
   const findJudge=name=>S.data.judges.find(j=>normalize(j.name)===normalize(name)||normalize(j.name).includes(normalize(name)));
   const findParticipant=name=>S.data.participants.find(p=>Number(p.stage||1)===2&&normalize(p.name)===normalize(name));
   const report={inserted:0,skipped:0,missing:[],errors:[]};
@@ -239,8 +239,8 @@ async function restoreBackupScores(){
    }
   }
   await reload();
-  const lines=[report.inserted+" nilai berhasil dipulihkan.",report.skipped+" nilai yang sudah ada dilewati (tidak ditimpa).",report.missing.length?"Data belum cocok:\\n"+[...new Set(report.missing)].join("\\n"):"",report.errors.length?"Gagal menyimpan:\\n"+report.errors.join("\\n"):""].filter(Boolean);
-  await MC.dialog({title:report.errors.length||report.missing.length?"Pemulihan sebagian selesai":"Backup berhasil dipulihkan",message:lines.join("\\n\\n"),confirm:"Tutup"});
+  const lines=[report.inserted+" nilai berhasil dipulihkan.",report.skipped+" nilai yang sudah ada dilewati (tidak ditimpa).",report.missing.length?"Data belum cocok:\n"+[...new Set(report.missing)].join("\n"):"",report.errors.length?"Gagal menyimpan:\n"+report.errors.join("\n"):""].filter(Boolean);
+  await MC.dialog({title:report.errors.length||report.missing.length?"Pemulihan sebagian selesai":"Backup berhasil dipulihkan",message:lines.join("\n\n"),confirm:"Tutup"});
  }catch(e){MC.toast("Pemulihan gagal: "+e.message,"err",7000);}
  finally{if(btn){btn.disabled=false;btn.innerHTML="↻ Pulihkan backup nilai";}}
 }
@@ -281,7 +281,7 @@ function startScoring(pid){
 async function renameParticipant(btn){
   const pid=btn.dataset.rename;const current=S.data.participants.find(p=>String(p.id)===String(pid));if(!current)return MC.toast("Data peserta tidak ditemukan.","err");
   const v=await MC.dialog({title:"Ubah nama peserta",message:"Nama baru akan diperbarui di seluruh halaman tanpa menghapus nilai atau preset peserta.",confirm:"Simpan nama",fields:[{name:"name",label:"Nama lengkap peserta",value:current.name,placeholder:"Masukkan nama lengkap"} ,{name:"pw",label:"Password preset",type:"password",autocomplete:"current-password"}],validate:v=>{if(!v.name.trim())return "Nama peserta tidak boleh kosong.";if(v.pw!==PRESET_PASSWORD)return "Password salah.";return "";}});
-  if(!v)return;const name=v.name.trim().replace(/\\s+/g," ");if(name===current.name)return MC.toast("Nama tidak berubah.");btn.disabled=true;
+  if(!v)return;const name=v.name.trim().replace(/\s+/g," ");if(name===current.name)return MC.toast("Nama tidak berubah.");btn.disabled=true;
   try{const {data,error}=await MC.sb.from("participants").update({name}).eq("id",current.id).select("id,name,kelas,stage,test_score,status").maybeSingle();if(error)throw error;if(!data)throw Error("Database tidak mengizinkan perubahan nama. Periksa izin UPDATE/RLS tabel participants.");const i=S.data.participants.findIndex(p=>String(p.id)===String(current.id));if(i>=0)S.data.participants[i]={...S.data.participants[i],...data};if(S.p&&String(S.p.id)===String(current.id))S.p={...S.p,...data};renderList();paintPicks();MC.toast("Nama peserta berhasil diperbarui.");}catch(e){btn.disabled=false;MC.toast("Gagal mengubah nama: "+e.message,"err",6000);}
 }
 
