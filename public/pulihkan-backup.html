@@ -27,6 +27,8 @@ const backup=[
 ["Putri Maha Rani","trania","jessica",50,53],
 ["Destiana Putri Setyaningsih","salsadira","trania",41,59]];
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLowerCase().replace(/\s+/g," ");
+const participantAliases={"desti":"destiana putri setyaningsih","putri maharani":"putri maha rani"};
+const canonicalParticipantName=s=>participantAliases[norm(s)]||norm(s);
 function values(total){let a=criteria.map(([,m])=>Math.floor(total*m/100)),left=total-a.reduce((x,y)=>x+y,0);for(let i=0;left>0;i=(i+1)%a.length){if(a[i]<criteria[i][1]){a[i]++;left--;}}return Object.fromEntries(criteria.map(([k],i)=>[k,a[i]]));}
 function say(t,error=false){$("status").textContent=t;$("status").style.color=error?"#b42318":"inherit";}
 $("restore").addEventListener("click",async()=>{
