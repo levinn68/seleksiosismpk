@@ -34,12 +34,12 @@ $("restore").addEventListener("click",async()=>{
  try{
   MC.connect();const d=await MC.loadAll();const sb=MC.sb;
   const judges=d.judges,participants=d.participants;let addedPeople=0,inserted=0,skipped=0;const missing=[],errors=[];
-  const judgeFor=n=>{const alias=norm(n)==="salsabil"?"salsabila":norm(n);return judges.find(j=>norm(j.name)===alias)||null;};
+  const judgeFor=n=>{const aliases={"salsabil":"salsabila","dira":"salsadira"};const key=norm(n);const alias=aliases[key]||key;return judges.find(j=>norm(j.name)===alias)||null;};
   for(const item of backup){
    let p=participants.find(x=>Number(x.stage||1)===2&&norm(x.name)===norm(item[0]));
    if(!p){
     if(!["andika","sagita"].includes(norm(item[0]))){missing.push("Peserta tidak ditemukan: "+item[0]);continue;}
-    const {data,error}=await sb.from("participants").insert({name:item[0],kelas:"—",stage:2}).select("id,name,kelas,stage").single();
+    const nextId=Math.max(0,...participants.map(x=>Number(x.id)||0))+1;\n    const {data,error}=await sb.from("participants").insert({id:nextId,name:item[0],kelas:"—",stage:2}).select("id,name,kelas,stage").single();
     if(error){errors.push("Gagal menambah "+item[0]+": "+error.message);continue;}
     p=data;participants.push(p);addedPeople++;
    }
