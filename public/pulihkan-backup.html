@@ -39,7 +39,8 @@ $("restore").addEventListener("click",async()=>{
    let p=participants.find(x=>Number(x.stage||1)===2&&norm(x.name)===norm(item[0]));
    if(!p){
     if(!["andika","sagita"].includes(norm(item[0]))){missing.push("Peserta tidak ditemukan: "+item[0]);continue;}
-    const nextId=Math.max(0,...participants.map(x=>Number(x.id)||0))+1;\n    const {data,error}=await sb.from("participants").insert({id:nextId,name:item[0],kelas:"—",stage:2}).select("id,name,kelas,stage").single();
+    const nextId=Math.max(0,...participants.map(x=>Number(x.id)||0))+1;
+    const {data,error}=await sb.from("participants").insert({id:nextId,name:item[0],kelas:"—",stage:2}).select("id,name,kelas,stage").single();
     if(error){errors.push("Gagal menambah "+item[0]+": "+error.message);continue;}
     p=data;participants.push(p);addedPeople++;
    }
