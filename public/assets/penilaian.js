@@ -212,7 +212,7 @@ function renderList(){
     const canStart=S.listMode==="presets"||r.hasPreset;
     return `<div class="rec"><div class="rec-top"><div><b>${pad(r.pid)} · ${esc(name)}</b><small>Kelas ${esc(r.person?r.person.kelas:"—")}</small></div>${badge}</div>
     <div class="rec-meta">Penguji 1: <span>${esc(r.j1?r.j1.name:"—")}</span> · ${r.a?r.a.total+"/100":"belum menilai"}<br>Penguji 2: <span>${esc(r.j2?r.j2.name:"—")}</span> · ${r.b?r.b.total+"/100":"belum menilai"}</div>
-    <div class="rec-act">${canStart?`<button type="button" class="btn primary sm" data-start="${r.pid}">Mulai menilai</button>`:""}<button type="button" class="btn danger sm" data-del="${r.kind}" data-id="${r.kind==="preset"?r.id:r.pid}" data-pid="${r.pid}">${r.kind==="preset"?"Hapus preset":"Hapus nilai tahap "+S.stage}</button></div></div>`;
+    <div class="rec-act"><button type="button" class="btn sm" data-rename="${r.pid}" data-name="${esc(name)}">Ubah nama</button>${canStart?`<button type="button" class="btn primary sm" data-start="${r.pid}">Mulai menilai</button>`:""}<button type="button" class="btn danger sm" data-del="${r.kind}" data-id="${r.kind==="preset"?r.id:r.pid}" data-pid="${r.pid}">${r.kind==="preset"?"Hapus preset":"Hapus nilai tahap "+S.stage}</button></div></div>`;
   }).join(""):`<div class="empty"><b>${S.q?"Tidak ada hasil":S.listMode==="presets"?"Belum ada preset di tahap ini":"Belum ada nilai di tahap ini"}</b>${S.q?"Coba kata kunci lain.":S.listMode==="presets"?"Buat preset pertama di tab Preset.":"Nilai muncul setelah penguji menyimpan skor."}</div>`;
   const pc=d.participants.filter(p=>Number(p.stage||1)===S.stage).length;
   el.innerHTML=`<div class="card"><div class="rec-top" style="align-items:center;margin-bottom:14px"><div><b>Peserta Tahap ${S.stage}</b><small style="display:block;color:var(--muted);font-size:12.5px">${pc} peserta terdaftar</small></div><button type="button" class="btn sm" data-imp>${icons.plus}<span>Impor peserta</span></button></div><div class="seg" role="tablist"><button type="button" role="tab" data-m="presets" aria-selected="${S.listMode==="presets"}">Preset <span class="num">${stagePresets}</span></button><button type="button" role="tab" data-m="scores" aria-selected="${S.listMode==="scores"}">Sudah dinilai <span class="num">${scored}</span></button></div>
@@ -221,6 +221,7 @@ function renderList(){
   el.querySelectorAll("[data-m]").forEach(b=>b.addEventListener("click",()=>{S.listMode=b.dataset.m;renderList();}));
   const rq=$("rq");rq.addEventListener("input",e=>{S.q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;renderList();const n=$("rq");n.focus();n.setSelectionRange(pos,pos);});
   el.querySelectorAll("[data-start]").forEach(b=>b.addEventListener("click",()=>startScoring(Number(b.dataset.start))));
+  el.querySelectorAll("[data-rename]").forEach(b=>b.addEventListener("click",()=>renameParticipant(b)));
   el.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>del(b)));
   $("cntList").textContent=stagePresets;
 }
@@ -231,6 +232,13 @@ function startScoring(pid){
   if(!S.p||!S.j1||!S.j2)return MC.toast("Data peserta atau penguji tidak ditemukan.","err");
   S.activeJudge=null;S.draft={};paintPicks();showTab("nilai");
 }
+async function renameParticipant(btn){
+  const pid=btn.dataset.rename;const current=S.data.participants.find(p=>String(p.id)===String(pid));if(!current)return MC.toast("Data peserta tidak ditemukan.","err");
+  const v=await MC.dialog({title:"Ubah nama peserta",message:"Nama baru akan diperbarui di seluruh halaman tanpa menghapus nilai atau preset peserta.",confirm:"Simpan nama",fields:[{name:"name",label:"Nama lengkap peserta",value:current.name,placeholder:"Masukkan nama lengkap"} ,{name:"pw",label:"Password preset",type:"password",autocomplete:"current-password"}],validate:v=>{if(!v.name.trim())return "Nama peserta tidak boleh kosong.";if(v.pw!==PRESET_PASSWORD)return "Password salah.";return "";}});
+  if(!v)return;const name=v.name.trim().replace(/\\s+/g," ");if(name===current.name)return MC.toast("Nama tidak berubah.");btn.disabled=true;
+  try{const {data,error}=await MC.sb.from("participants").update({name}).eq("id",current.id).select("id,name,kelas,stage,test_score,status").maybeSingle();if(error)throw error;if(!data)throw Error("Database tidak mengizinkan perubahan nama. Periksa izin UPDATE/RLS tabel participants.");const i=S.data.participants.findIndex(p=>String(p.id)===String(current.id));if(i>=0)S.data.participants[i]={...S.data.participants[i],...data};if(S.p&&String(S.p.id)===String(current.id))S.p={...S.p,...data};renderList();paintPicks();MC.toast("Nama peserta berhasil diperbarui.");}catch(e){btn.disabled=false;MC.toast("Gagal mengubah nama: "+e.message,"err",6000);}
+}
+
 async function del(btn){
   const kind=btn.dataset.del,id=btn.dataset.id,pid=btn.dataset.pid;
   const what=kind==="preset"?"preset peserta ini":`semua nilai peserta ini pada Tahap ${S.stage}`;
