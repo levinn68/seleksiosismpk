@@ -222,7 +222,7 @@ async function restoreBackupScores(){
  const btn=$("panel-daftar").querySelector("[data-restore-backup]");if(btn){btn.disabled=true;btn.textContent="Memulihkan…";}
  try{
   const normalize=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("id").replace(/\s+/g," ");
-  const findJudge=name=>S.data.judges.find(j=>normalize(j.name)===normalize(name)||normalize(j.name).includes(normalize(name)));
+  const findJudge=name=>{const key=normalize(name);const exact=S.data.judges.find(j=>normalize(j.name)===key);if(exact)return exact;const aliases={"salsabil":"salsabila"};return aliases[key]?S.data.judges.find(j=>normalize(j.name)===aliases[key]):null;};
   const findParticipant=name=>S.data.participants.find(p=>Number(p.stage||1)===2&&normalize(p.name)===normalize(name));
   const report={inserted:0,skipped:0,missing:[],errors:[]};
   for(const item of BACKUP_SCORES){
