@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10244f"><title>Pulihkan Backup Nilai · Seleksi OSIS/MPK</title><link rel="stylesheet" href="assets/style.css"><link rel="stylesheet" href="assets/floating-nav.css?v=4"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body><header class="topbar"><div class="topbar-in"><a class="brand" href="./"><img src="assets/logo-mpk.png" alt=""><div><b>Seleksi OSIS / MPK</b><small>SMP TH · 2027/2028</small></div></a></div></header>
+<main class="main" style="max-width:760px;margin:28px auto;padding:0 16px"><section class="sheet" style="padding:22px"><h1 style="font-size:clamp(24px,5vw,34px)">Pulihkan backup nilai</h1><p class="sub">Memasukkan nilai manual 12 peserta ke Tahap 2. Nilai yang sudah ada tidak akan ditimpa. Andika dan Sagita dibuat sebagai peserta baru jika belum ditemukan.</p>
+<div class="fld" style="margin:18px 0"><label class="lbl" for="pw">Password preset</label><input class="input" id="pw" type="password" autocomplete="current-password" placeholder="Masukkan password preset"></div>
+<div id="status" class="msg" role="status" aria-live="polite" style="white-space:pre-wrap;margin:12px 0">Siap memeriksa data Supabase.</div>
+<button id="restore" class="btn primary" type="button">Pulihkan 12 peserta</button>
+<a class="btn" href="dashboard.html" style="margin-left:8px">Kembali ke dashboard</a>
+<p style="font-size:13px;color:var(--muted);margin-top:18px">Catatan: karena backup manual hanya berisi total nilai per juri, nilai per kriteria akan dibagi secara proporsional. Nilai asli per kriteria tidak dapat dipulihkan dari total saja.</p></section></main>
+<script src="config.js"></script><script src="assets/common.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id), criteria=[["articulation",20],["intonation",20],["fluency",20],["expression",15],["confidence",15],["body_language",10]];
+const backup=[
+["Muhammad Nazril Ilham","febrian","geofani",72,75],
+["Djazirah Fitriani","salsabila","dona",78,79],
+["Deswita Putri Wulandari","salsabila","trania",89,90],
+["Charisya Saskia Ananda","salsadira","trania",80,75],
+["Aoura Esmeralda","alvino","dona",77,74],
+["Wahyu Putri Anggraeni","geofani","trania",78,89],
+["Sifania Monica Sesilia","dira","trania",80,82],
+["Rara Dwi Novianti","dira","trania",83,87],
+["Iloh Selviani","salsabila","trania",80,82],
+["Andika","febrian","geofani",75,75],
+["Sagita","trania","salsadira",79,82],
+["Alfin Paskal Bussy","alvino","dona",87,81]];
+const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLowerCase().replace(/\s+/g," ");
+function values(total){let a=criteria.map(([,m])=>Math.floor(total*m/100)),left=total-a.reduce((x,y)=>x+y,0);for(let i=0;left>0;i=(i+1)%a.length){if(a[i]<criteria[i][1]){a[i]++;left--;}}return Object.fromEntries(criteria.map(([k],i)=>[k,a[i]]));}
+function say(t,error=false){$("status").textContent=t;$("status").style.color=error?"#b42318":"inherit";}
+$("restore").addEventListener("click",async()=>{
+ const btn=$("restore");if($("pw").value!==PRESET_PASSWORD){say("Password preset salah.",true);return;}
+ if(!confirm("Pulihkan nilai backup Tahap 2? Nilai yang sudah ada akan dilewati, bukan ditimpa."))return;
+ btn.disabled=true;btn.textContent="Memproses…";
+ try{
+  MC.connect();const d=await MC.loadAll();const sb=MC.sb;
+  const judges=d.judges,participants=d.participants;let addedPeople=0,inserted=0,skipped=0;const missing=[],errors=[];
+  const judgeFor=n=>{const alias=norm(n)==="salsabil"?"salsabila":norm(n);return judges.find(j=>norm(j.name)===alias)||null;};
+  for(const item of backup){
+   let p=participants.find(x=>Number(x.stage||1)===2&&norm(x.name)===norm(item[0]));
+   if(!p){
+    if(!["andika","sagita"].includes(norm(item[0]))){missing.push("Peserta tidak ditemukan: "+item[0]);continue;}
+    const {data,error}=await sb.from("participants").insert({name:item[0],kelas:"—",stage:2}).select("id,name,kelas,stage").single();
+    if(error){errors.push("Gagal menambah "+item[0]+": "+error.message);continue;}
+    p=data;participants.push(p);addedPeople++;
+   }
+   const j1=judgeFor(item[1]),j2=judgeFor(item[2]);
+   if(!j1||!j2){missing.push("Penguji tidak ditemukan untuk "+item[0]+": "+(!j1?item[1]+" ":"")+(!j2?item[2]:""));continue;}
+   for(const [j,total] of [[j1,item[3]],[j2,item[4]]]){
+    if(d.scores.some(s=>String(s.participant_id)===String(p.id)&&String(s.judge_id)===String(j.id)&&Number(s.stage||1)===2)){skipped++;continue;}
+    const row={participant_id:p.id,judge_id:j.id,stage:2,...values(total),total,updated_at:new Date().toISOString()};
+    const {error}=await sb.from("scores").insert(row);
+    if(error)errors.push(item[0]+" / "+j.name+": "+error.message);else{inserted++;d.scores.push({...row});}
+   }
+  }
+  say("Selesai.\nPeserta baru dibuat: "+addedPeople+"\nNilai baru disimpan: "+inserted+"\nNilai yang sudah ada dilewati: "+skipped+(missing.length?"\n\nPerlu dicek:\n"+[...new Set(missing)].join("\n"):"")+(errors.length?"\n\nError:\n"+errors.join("\n"):""),!!(missing.length||errors.length));
+  btn.textContent="Selesai — muat ulang untuk cek"; 
+ }catch(e){say("Pemulihan gagal: "+(e.message||e),true);btn.disabled=false;btn.textContent="Coba lagi";}
+});
+})();
+</script><script src="assets/floating-nav.js?v=3"></script></body></html>
